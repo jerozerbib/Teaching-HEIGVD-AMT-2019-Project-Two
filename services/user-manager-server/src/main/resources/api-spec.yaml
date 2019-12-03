@@ -12,6 +12,25 @@ schemes:
 - "http"
 paths:
   /users:
+    post:
+      tags:
+      - "users"
+      summary: "Create a new user"
+      description: ""
+      operationId: createUser
+      consumes:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '201':
+          description: created
+          schema:
+            type: object
     get:
       tags:
       - "users"
