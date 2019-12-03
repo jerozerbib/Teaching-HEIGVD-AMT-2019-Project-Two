@@ -1,4 +1,4 @@
-./services/UserManagement/user-manager-server/.idea/*
+**/.idea/
 
 target/
 pom.xml.tag
