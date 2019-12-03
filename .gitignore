@@ -1,3 +1,5 @@
+./services/UserManagement/user-manager-server/.idea/*
+
 target/
 pom.xml.tag
 pom.xml.releaseBackup
