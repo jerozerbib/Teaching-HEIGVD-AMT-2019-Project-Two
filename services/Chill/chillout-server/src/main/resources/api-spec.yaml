@@ -1,0 +1,52 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Chillout API
+  description: An API to manage the entities in the chillout
+basePath: /api
+schemes:
+  - http
+paths:
+  /clients:
+    post:
+      description: create a client
+      operationId: createClient
+      consumes:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Client'
+      responses:
+        '201':
+          description: created
+          schema:
+            type: object
+    get:
+      description: get the list of all clients
+      operationId: getClients
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Client'
+definitions:
+  Client:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      isAdmin:
+        type: boolean
