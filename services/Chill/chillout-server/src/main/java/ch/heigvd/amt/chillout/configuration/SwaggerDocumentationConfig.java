@@ -1,4 +1,4 @@
-package ch.heig.vd.amt.chillout.configuration;
+package ch.heigvd.amt.chillout.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

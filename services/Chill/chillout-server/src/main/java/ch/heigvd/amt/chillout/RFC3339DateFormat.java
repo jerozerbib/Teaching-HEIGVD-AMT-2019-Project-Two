@@ -1,4 +1,4 @@
-package ch.heig.vd.amt.chillout;
+package ch.heigvd.amt.chillout;
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;

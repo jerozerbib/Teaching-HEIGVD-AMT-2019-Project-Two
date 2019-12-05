@@ -1,4 +1,4 @@
-package ch.heig.vd.amt.chillout.api.util;
+package ch.heigvd.amt.chillout.api.util;
 
 import javax.xml.bind.annotation.XmlTransient;
 

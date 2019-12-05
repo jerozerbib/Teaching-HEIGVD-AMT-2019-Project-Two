@@ -1,4 +1,4 @@
-package ch.heig.vd.amt.chillout.entities;
+package ch.heigvd.amt.chillout.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

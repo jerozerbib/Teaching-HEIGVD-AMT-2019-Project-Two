@@ -1,4 +1,4 @@
-package ch.heig.vd.amt.chillout;
+package ch.heigvd.amt.chillout;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
@@ -10,7 +10,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
-@ComponentScan(basePackages = { "io.avalia.fruits", "io.avalia.fruits.api" })
+@ComponentScan(basePackages = { "ch.heigvd.amt.chillout", "ch.heigvd.amt.chillout.api" , "ch.heigvd.amt.chillout.configuration"})
 public class Swagger2SpringBoot implements CommandLineRunner {
 
     @Override

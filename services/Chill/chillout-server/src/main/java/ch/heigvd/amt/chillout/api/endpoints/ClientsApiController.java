@@ -1,9 +1,9 @@
-package ch.heig.vd.amt.chillout.api.endpoints;
+package ch.heigvd.amt.chillout.api.endpoints;
 
-import ch.heig.vd.amt.chillout.repositories.ClientRepository;
-import io.avalia.fruits.api.ClientsApi;
-import ch.heig.vd.amt.chillout.entities.ClientEntity;
-import io.avalia.fruits.api.model.Client;
+import ch.heigvd.amt.chillout.api.ClientsApi;
+import ch.heigvd.amt.chillout.repositories.ClientRepository;
+import ch.heigvd.amt.chillout.api.model.Client;
+import ch.heigvd.amt.chillout.entities.ClientEntity;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
