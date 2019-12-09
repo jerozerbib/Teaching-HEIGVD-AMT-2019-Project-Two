@@ -36,12 +36,68 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Client'
+  /products:
+    post:
+      description: create a product
+      operationId: createProduct
+      consumes:
+        - application/json
+      parameters:
+        - name: product
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Product'
+      responses:
+        '201':
+          description: created
+          schema:
+            type: object
+    get:
+      description: get the list of all products
+      operationId: getProducts
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Product'
+  /orderItem:
+    get:
+      description: get the list of all orderItems
+      operationId: getOrderItems
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OrderItem'
+  /order:
+    get:
+      description: get the list of all orders
+      operationId: getOrders
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
 definitions:
   Client:
     type: object
     properties:
       id:
         type: integer
+        format: int64
       name:
         type: string
       username:
@@ -50,3 +106,37 @@ definitions:
         type: string
       isAdmin:
         type: boolean
+  Product:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      unitPrice:
+        type: number
+      description:
+        type: string
+  OrderItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      product:
+        $ref: '#/definitions/Product'
+      quantity:
+        type: integer
+  Order:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      client:
+        $ref: '#/definitions/Client'
+      orderItems:
+        type: array
+        items:
+          $ref: '#/definitions/OrderItem'

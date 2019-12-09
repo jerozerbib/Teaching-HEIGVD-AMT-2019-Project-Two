@@ -22,12 +22,12 @@ import java.util.List;
 public class ClientsApiController implements ClientsApi {
 
     @Autowired
-    ClientRepository fruitRepository;
+    ClientRepository clientRepository;
 
-    public ResponseEntity<Object> createFruit(@ApiParam(value = "", required = true) @Valid @RequestBody Client client) {
-        ClientEntity newClientEntity = toFruitEntity(client);
-        fruitRepository.save(newClientEntity);
-        Integer id = newClientEntity.getId();
+    public ResponseEntity<Object> createClient(@ApiParam(value = "", required = true) @Valid @RequestBody Client client) {
+        ClientEntity newClientEntity = toClientEntity(client);
+        clientRepository.save(newClientEntity);
+        Long id = newClientEntity.getId();
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{id}")
@@ -37,16 +37,16 @@ public class ClientsApiController implements ClientsApi {
     }
 
 
-    public ResponseEntity<List<Client>> getFruits() {
-        List<Client> fruits = new ArrayList<>();
-        for (ClientEntity clientEntity : fruitRepository.findAll()) {
-            fruits.add(toClient(clientEntity));
+    public ResponseEntity<List<Client>> getClients() {
+        List<Client> clients = new ArrayList<>();
+        for (ClientEntity clientEntity : clientRepository.findAll()) {
+            clients.add(toClient(clientEntity));
         }
-        return ResponseEntity.ok(fruits);
+        return ResponseEntity.ok(clients);
     }
 
 
-    private ClientEntity toFruitEntity(Client client) {
+    private ClientEntity toClientEntity(Client client) {
         ClientEntity entity = new ClientEntity();
         entity.setId(client.getId());
         entity.setName(client.getName());
