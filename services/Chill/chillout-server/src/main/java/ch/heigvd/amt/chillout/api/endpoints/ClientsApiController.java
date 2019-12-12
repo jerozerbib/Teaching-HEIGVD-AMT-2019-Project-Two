@@ -1,8 +1,9 @@
 package ch.heigvd.amt.chillout.api.endpoints;
 
 import ch.heigvd.amt.chillout.api.ClientsApi;
+import ch.heigvd.amt.chillout.api.model.ClientInput;
+import ch.heigvd.amt.chillout.api.model.ClientOutput;
 import ch.heigvd.amt.chillout.repositories.ClientRepository;
-import ch.heigvd.amt.chillout.api.model.Client;
 import ch.heigvd.amt.chillout.entities.ClientEntity;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,12 @@ public class ClientsApiController implements ClientsApi {
     @Autowired
     ClientRepository clientRepository;
 
-    public ResponseEntity<Object> createClient(@ApiParam(value = "", required = true) @Valid @RequestBody Client client) {
+    /**
+     * Creates a new Client from the ClientInput of the Swagger file with a POST method request
+     * @param client ClientInput that gives all the needed information necessary to create a Client
+     * @return a new Object
+     */
+    public ResponseEntity<Object> createClient(@ApiParam(value = "", required = true) @Valid @RequestBody ClientInput client) {
         ClientEntity newClientEntity = toClientEntity(client);
         clientRepository.save(newClientEntity);
         Long id = newClientEntity.getId();
@@ -36,31 +42,43 @@ public class ClientsApiController implements ClientsApi {
         return ResponseEntity.created(location).build();
     }
 
-
-    public ResponseEntity<List<Client>> getClients() {
-        List<Client> clients = new ArrayList<>();
+    /**
+     * Gets all the Client in the database with the GET method request
+     * @return all the clients
+     */
+    public ResponseEntity<List<ClientOutput>> getClients() {
+        List<ClientOutput> clients = new ArrayList<>();
         for (ClientEntity clientEntity : clientRepository.findAll()) {
             clients.add(toClient(clientEntity));
         }
         return ResponseEntity.ok(clients);
     }
 
-
-    private ClientEntity toClientEntity(Client client) {
+    /**
+     * Converts a ClientInput to a ClientEntity
+     * @param client Input
+     * @return a ClientEntity
+     */
+    private ClientEntity toClientEntity(ClientInput client) {
         ClientEntity entity = new ClientEntity();
-        entity.setId(client.getId());
         entity.setName(client.getName());
         entity.setUsername(client.getUsername());
+        entity.setPassword(client.getPassword());
+        entity.setSalt(client.getSalt());
         entity.setAdmin(client.getIsAdmin());
         return entity;
     }
 
-    private Client toClient(ClientEntity entity) {
-        Client client = new Client();
-        client.setId(entity.getId());
+    /**
+     * Converts a ClientEntity to a ClientOutput
+     * @param entity to convert
+     * @return a ClientOutput
+     */
+    private ClientOutput toClient(ClientEntity entity) {
+        ClientOutput client = new ClientOutput();
+        client.setId(client.getId());
         client.setName(entity.getName());
         client.setUsername(entity.getUsername());
-        client.setIsAdmin(entity.isAdmin());
         return client;
     }
 

@@ -2,6 +2,8 @@ package ch.heigvd.amt.chillout.api.endpoints;
 
 import ch.heigvd.amt.chillout.api.ProductsApi;
 import ch.heigvd.amt.chillout.api.model.Product;
+import ch.heigvd.amt.chillout.api.model.ProductInput;
+import ch.heigvd.amt.chillout.api.model.ProductOutput;
 import ch.heigvd.amt.chillout.entities.ProductEntity;
 import ch.heigvd.amt.chillout.repositories.ProductRepository;
 import io.swagger.annotations.ApiParam;
@@ -24,7 +26,7 @@ public class ProductsApiController implements ProductsApi {
     @Autowired
     ProductRepository productRepository;
 
-    public ResponseEntity<Object> createProduct(@ApiParam(value = "", required = true) @Valid @RequestBody Product product) {
+    public ResponseEntity<Object> createProduct(@ApiParam(value = "", required = true) @Valid @RequestBody ProductInput product) {
         ProductEntity newProductEntity = toProductEntity(product);
         productRepository.save(newProductEntity);
         Long id = newProductEntity.getId();
@@ -37,8 +39,8 @@ public class ProductsApiController implements ProductsApi {
     }
 
 
-    public ResponseEntity<List<Product>> getProducts() {
-        List<Product> products = new ArrayList<>();
+    public ResponseEntity<List<ProductOutput>> getProducts() {
+        List<ProductOutput> products = new ArrayList<>();
         for (ProductEntity productEntity : productRepository.findAll()) {
             products.add(toProduct(productEntity));
         }
@@ -46,17 +48,16 @@ public class ProductsApiController implements ProductsApi {
     }
 
 
-    private ProductEntity toProductEntity(Product product) {
+    private ProductEntity toProductEntity(ProductInput product) {
         ProductEntity entity = new ProductEntity();
-        entity.setId(product.getId());
         entity.setName(product.getName());
         entity.setUnitPrice(product.getUnitPrice());
         entity.setDescription(product.getDescription());
         return entity;
     }
 
-    private Product toProduct(ProductEntity entity) {
-        Product product = new Product();
+    private ProductOutput toProduct(ProductEntity entity) {
+        ProductOutput product = new ProductOutput();
         product.setId(entity.getId());
         product.setName(entity.getName());
         product.setUnitPrice(entity.getUnitPrice());

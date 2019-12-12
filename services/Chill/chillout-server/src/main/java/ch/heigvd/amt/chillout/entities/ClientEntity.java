@@ -23,4 +23,6 @@ public class ClientEntity implements Serializable {
     private String name;
     private String username;
     private boolean isAdmin;
+    private String password;
+    private String salt;
 }
