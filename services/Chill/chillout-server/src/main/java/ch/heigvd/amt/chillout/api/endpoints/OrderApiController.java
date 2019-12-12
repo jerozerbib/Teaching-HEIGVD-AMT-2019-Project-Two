@@ -46,6 +46,11 @@ public class OrderApiController implements OrdersApi {
         return order;
     }
 
+    /**
+     * Converts a ClientEntity to a ClientOutpur
+     * @param entity to convert
+     * @return a ClientOutput
+     */
     private ClientOutput toClientOutput(ClientEntity entity) {
         ClientOutput client = new ClientOutput();
         client.setName(entity.getName());
@@ -54,6 +59,11 @@ public class OrderApiController implements OrdersApi {
         return client;
     }
 
+    /**
+     * Convert a list of OrderItemEntities to a list of OrderItems
+     * @param entities to convert
+     * @return a list of OrderItems
+     */
     private List<OrderItem> toOrderItems(List<OrderItemEntity> entities) {
         List<OrderItem> orderItems = new ArrayList<>();
 
@@ -67,6 +77,11 @@ public class OrderApiController implements OrdersApi {
         return orderItems;
     }
 
+    /**
+     * Convert a ProductEntity to a Product
+     * @param entity to convert
+     * @return a Product
+     */
     private Product toProduct(ProductEntity entity) {
         Product product = new Product();
         product.setName(entity.getName());

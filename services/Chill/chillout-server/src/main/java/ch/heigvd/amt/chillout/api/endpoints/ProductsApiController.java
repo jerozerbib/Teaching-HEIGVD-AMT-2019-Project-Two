@@ -26,6 +26,11 @@ public class ProductsApiController implements ProductsApi {
     @Autowired
     ProductRepository productRepository;
 
+    /**
+     * Creates a new Product from the ProductInput of the Swagger file with a POST method request
+     * @param product ProductInput that gives all the needed information necessary to create a Product
+     * @return a new Object
+     */
     public ResponseEntity<Object> createProduct(@ApiParam(value = "", required = true) @Valid @RequestBody ProductInput product) {
         ProductEntity newProductEntity = toProductEntity(product);
         productRepository.save(newProductEntity);
@@ -38,7 +43,10 @@ public class ProductsApiController implements ProductsApi {
         return ResponseEntity.created(location).build();
     }
 
-
+    /**
+     * Gets all the Products with a GET method request
+     * @return all the products
+     */
     public ResponseEntity<List<ProductOutput>> getProducts() {
         List<ProductOutput> products = new ArrayList<>();
         for (ProductEntity productEntity : productRepository.findAll()) {
@@ -47,7 +55,11 @@ public class ProductsApiController implements ProductsApi {
         return ResponseEntity.ok(products);
     }
 
-
+    /**
+     * Converts a ProductInput into a ProductEntity
+     * @param product to convert
+     * @return a ProductEntity
+     */
     private ProductEntity toProductEntity(ProductInput product) {
         ProductEntity entity = new ProductEntity();
         entity.setName(product.getName());
@@ -56,6 +68,11 @@ public class ProductsApiController implements ProductsApi {
         return entity;
     }
 
+    /**
+     * Converts a ProductEntitty
+     * @param entity to convert
+     * @return a ProductOutput
+     */
     private ProductOutput toProduct(ProductEntity entity) {
         ProductOutput product = new ProductOutput();
         product.setId(entity.getId());
