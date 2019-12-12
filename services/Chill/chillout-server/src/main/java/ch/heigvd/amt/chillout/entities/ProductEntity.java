@@ -17,6 +17,9 @@ import java.math.BigDecimal;
 @Entity
 public class ProductEntity implements Serializable {
 
+    /**
+     * Creates a ProductEntity
+     */
     public ProductEntity(){}
 
     @Id

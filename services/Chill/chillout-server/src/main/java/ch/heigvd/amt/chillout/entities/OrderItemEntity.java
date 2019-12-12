@@ -13,6 +13,9 @@ import java.io.Serializable;
 @Entity
 public class OrderItemEntity implements Serializable {
 
+    /**
+     * Creates an OrderItemEntity
+     */
     public OrderItemEntity(){}
 
     @Id

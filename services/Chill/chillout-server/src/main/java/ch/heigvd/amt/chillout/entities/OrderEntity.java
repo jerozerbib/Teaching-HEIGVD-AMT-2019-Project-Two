@@ -14,6 +14,9 @@ import java.util.List;
 @Entity
 public class OrderEntity implements Serializable {
 
+    /**
+     * Creates an OrderEntity
+     */
     public OrderEntity(){}
 
     @Id

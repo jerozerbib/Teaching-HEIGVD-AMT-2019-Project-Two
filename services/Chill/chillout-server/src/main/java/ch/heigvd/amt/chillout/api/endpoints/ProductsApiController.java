@@ -1,7 +1,6 @@
 package ch.heigvd.amt.chillout.api.endpoints;
 
 import ch.heigvd.amt.chillout.api.ProductsApi;
-import ch.heigvd.amt.chillout.api.model.Product;
 import ch.heigvd.amt.chillout.api.model.ProductInput;
 import ch.heigvd.amt.chillout.api.model.ProductOutput;
 import ch.heigvd.amt.chillout.entities.ProductEntity;

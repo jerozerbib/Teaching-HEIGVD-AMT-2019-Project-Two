@@ -15,6 +15,9 @@ import lombok.Setter;
 @Entity
 public class ClientEntity implements Serializable {
 
+    /**
+     * Creates an empty ClientEntity
+     */
     public ClientEntity(){}
 
     @Id
