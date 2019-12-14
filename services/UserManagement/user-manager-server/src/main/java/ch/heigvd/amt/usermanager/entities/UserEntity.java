@@ -16,6 +16,11 @@ import java.io.Serializable;
 @Entity
 public class UserEntity implements Serializable {
 
+    /**
+     * Default constructor
+     */
+    public UserEntity() {}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String email;
