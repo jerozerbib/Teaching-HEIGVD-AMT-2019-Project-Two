@@ -1,5 +1,6 @@
 #!/bin/bash
 
+rm -r tmp
 mkdir tmp
 
 mvn clean package -f ../../services/UserManagement/user-manager-server/pom.xml
