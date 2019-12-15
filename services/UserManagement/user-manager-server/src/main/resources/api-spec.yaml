@@ -59,6 +59,10 @@ definitions:
         type: "string"
       lastName:
         type: "string"
+      isAdmin:
+        type: "boolean"
+      isBlocked:
+        type: "boolean"
   UserOutput:
     allOf:
       - type: "object"
