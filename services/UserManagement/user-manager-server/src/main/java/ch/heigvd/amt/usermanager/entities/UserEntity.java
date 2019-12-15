@@ -22,7 +22,6 @@ public class UserEntity implements Serializable {
     public UserEntity() {}
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String email;
     private String firstName;
     private String lastName;
