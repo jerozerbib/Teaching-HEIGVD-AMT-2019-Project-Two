@@ -4,9 +4,8 @@ info:
   version: "1.0.0"
   title: "Users"
 
-
-
-basePath: "/user-manager"
+host: localhost:8080
+basePath: /api
 tags:
 - name: "users"
   description: "Everything about your users"
