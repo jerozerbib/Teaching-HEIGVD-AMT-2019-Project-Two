@@ -48,7 +48,6 @@ paths:
             type: array
             items:
               $ref: "#/definitions/UserOutput"
-
 definitions:
   User:
     type: "object"
@@ -76,3 +75,4 @@ definitions:
             type: "string"
           salt:
             type: "string"
+  Edit:

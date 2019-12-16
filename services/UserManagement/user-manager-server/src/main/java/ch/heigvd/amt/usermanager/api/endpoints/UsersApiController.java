@@ -10,8 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -22,7 +21,8 @@ import java.util.Optional;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-12-02T18:00:35.658Z")
 
-@Controller
+@RestController
+@RequestMapping("/users")
 public class UsersApiController implements UsersApi {
 
     // Source : https://howtodoinjava.com/spring-boot2/spring-boot-crud-hibernate/
@@ -34,10 +34,10 @@ public class UsersApiController implements UsersApi {
 
     /**
      * Creates a new User from a UserInput using the request method POST
-     *
      * @param user UserInput
      * @return a new Object
      */
+    @PostMapping
     public ResponseEntity<Object> createUser(@ApiParam(value = "", required = true) @Valid @RequestBody UserInput user) {
         UserEntity newUserEntity = toUserEntity(user);
         userRepository.save(newUserEntity);
@@ -46,9 +46,13 @@ public class UsersApiController implements UsersApi {
                 .fromCurrentRequest().path("/{email}")
                 .buildAndExpand(newUserEntity.getEmail()).toUri();
 
-        userRepository.save(newUserEntity);
-
-        return ResponseEntity.created(location).build();
+        Optional<UserEntity> userEntity = userRepository.findById(user.getEmail());
+        if (userEntity.isPresent()){
+            throw new Error("User already exist. Impossible to create it.");
+        } else {
+            userRepository.save(newUserEntity);
+            return ResponseEntity.created(location).build();
+        }
     }
 
     /**
@@ -75,6 +79,7 @@ public class UsersApiController implements UsersApi {
      * @return A UserEntity
      * @throws Exception
      */
+    @GetMapping("/{email}")
     public UserEntity getUserById(String email) throws Exception {
         Optional<UserEntity> userEntity = userRepository.findById(email);
         if (userEntity.isPresent()){
@@ -84,12 +89,12 @@ public class UsersApiController implements UsersApi {
         }
     }
 
-
     /**
      * Gets all the Users from the database using the request method GET
      *
      * @return a List of UserOutputs
      */
+    @GetMapping()
     public ResponseEntity<List<UserOutput>> getUsers() {
         List<UserOutput> users = new ArrayList<>();
         for (UserEntity userEntity : userRepository.findAll()) {
@@ -97,7 +102,7 @@ public class UsersApiController implements UsersApi {
         }
         return ResponseEntity.ok(users);
     }
-//
+
 //    @RequestMapping(value = "/users", method = RequestMethod.GET)
 //    Page<UserOutput> users(Pageable pageable) {
 //        return userRepository.findAll(pageable);
@@ -119,4 +124,5 @@ public class UsersApiController implements UsersApi {
         user.setIsBlocked(entity.isBlocked());
         return user;
     }
+
 }

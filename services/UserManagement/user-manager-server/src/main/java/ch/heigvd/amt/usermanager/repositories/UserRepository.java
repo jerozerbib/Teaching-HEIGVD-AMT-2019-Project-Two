@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
 
-
 public interface UserRepository extends CrudRepository<UserEntity, String>{
     Page<UserOutput> findAll(Pageable pageable);
 }
