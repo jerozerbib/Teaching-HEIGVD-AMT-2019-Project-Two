@@ -1,0 +1,73 @@
+swagger: "2.0"
+info:
+  description: "This is the user manager API for AMT Project Two"
+  version: "1.0.0"
+  title: "Users"
+
+host: localhost:8080
+basePath: /api
+tags:
+- name: "users"
+  description: "Everything about your users"
+schemes:
+- http
+paths:
+  /users:
+    post:
+      tags:
+      - "users"
+      summary: "Create a new user"
+      description: ""
+      operationId: createUser
+      consumes:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserInput'
+      responses:
+        '201':
+          description: created
+          schema:
+            type: object
+    get:
+      tags:
+      - "users"
+      summary: "Get the list of all users"
+      description: ""
+      operationId: "getUsers"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/UserOutput"
+
+definitions:
+  User:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+  UserOutput:
+    allOf:
+      - type: "object"
+      - $ref: "#/definitions/User"
+  UserInput:
+    allOf:
+      - $ref: "#/definitions/User"
+      - type: "object"
+      - properties:
+          password:
+            type: "string"
+          salt:
+            type: "string"
