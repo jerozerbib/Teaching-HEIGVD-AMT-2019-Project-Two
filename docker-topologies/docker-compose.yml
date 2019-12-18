@@ -34,6 +34,10 @@ services:
             - mysql
         environment:
             - MYSQL_ROOT_PASSWORD=root
+            - PMA_HOST=mysql
+            - PMA_PORT=3306
+            - PMA_USER=root
+            - PMA_PASSWORD=root
         ports:
             - "6060:80"
 volumes:
