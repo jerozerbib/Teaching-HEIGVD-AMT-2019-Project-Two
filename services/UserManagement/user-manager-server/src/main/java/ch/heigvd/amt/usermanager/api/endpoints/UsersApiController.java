@@ -1,11 +1,13 @@
 package ch.heigvd.amt.usermanager.api.endpoints;
 
 import ch.heigvd.amt.usermanager.api.UsersApi;
+import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
 import ch.heigvd.amt.usermanager.api.model.UserInput;
 import ch.heigvd.amt.usermanager.api.model.UserOutput;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
 import ch.heigvd.amt.usermanager.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,19 +42,23 @@ public class UsersApiController implements UsersApi {
     @PostMapping
     public ResponseEntity<Object> createUser(@ApiParam(value = "", required = true) @Valid @RequestBody UserInput user) {
         UserEntity newUserEntity = toUserEntity(user);
-        userRepository.save(newUserEntity);
+
+        //TODO: Ajouter le check de ADMIN ou pas avec le Token JWT
+
+        try {
+            if (userRepository.existsById(newUserEntity.getEmail())) {
+                throw new ApiException(409, "User already exist. Impossible to create it.");
+            }
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{email}")
                 .buildAndExpand(newUserEntity.getEmail()).toUri();
 
-        Optional<UserEntity> userEntity = userRepository.findById(user.getEmail());
-        if (userEntity.isPresent()){
-            throw new Error("User already exist. Impossible to create it.");
-        } else {
-            userRepository.save(newUserEntity);
-            return ResponseEntity.created(location).build();
-        }
+        userRepository.save(newUserEntity);
+        return ResponseEntity.created(location).build();
     }
 
     /**
@@ -85,29 +91,26 @@ public class UsersApiController implements UsersApi {
         if (userEntity.isPresent()){
             return userEntity.get();
         } else {
-            throw new Exception("No employee record exist for given id");
+            throw new ApiException(404, "No employee record exist for given id");
         }
     }
+
+
 
     /**
      * Gets all the Users from the database using the request method GET
      *
      * @return a List of UserOutputs
      */
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<UserOutput>> getUsers() {
+        //TODO : Rajouter le check ADMIN ou non avec le token
         List<UserOutput> users = new ArrayList<>();
         for (UserEntity userEntity : userRepository.findAll()) {
             users.add(toUser(userEntity));
         }
         return ResponseEntity.ok(users);
     }
-
-//    @RequestMapping(value = "/users", method = RequestMethod.GET)
-//    Page<UserOutput> users(Pageable pageable) {
-//        return userRepository.findAll(pageable);
-//
-//    }
 
     /**
      * Converts a UserEntity in a UserOutput
@@ -125,4 +128,42 @@ public class UsersApiController implements UsersApi {
         return user;
     }
 
+    @PutMapping
+    public ResponseEntity<Object> updateUser(UserInput user) {
+        UserEntity newUserEntity = toUserEntity(user);
+
+        //TODO : Controle JWT sur identite et retour de user qui modifie !
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/{email}")
+                .buildAndExpand(newUserEntity.getEmail()).toUri();
+        try {
+            if (!userRepository.existsById(newUserEntity.getEmail())){
+                throw new ApiException(404, "User does not exist. Impossible to update it");
+            }
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        // TODO : check si user qui modiifie est admin et si isBlocked est modifie en accordance ?
+        userRepository.save(newUserEntity);
+        return ResponseEntity.created(location).build();
+    }
+
+    @DeleteMapping("/{email}")
+    public ResponseEntity<Object> deleteUser(String email) throws Exception {
+
+        // TODO : Check JWT et retour User qui modifie
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/{email}")
+                .buildAndExpand(email).toUri();
+
+        if (!userRepository.existsById(email)){
+            throw new Error("User does not exist. Impossible to delete it");
+        } else {
+            // TODO : Check qui User qui modifie est le meme que celui qui est supprime
+            userRepository.delete(getUserById(email));
+            return ResponseEntity.created(location).build();
+        }
+    }
 }
