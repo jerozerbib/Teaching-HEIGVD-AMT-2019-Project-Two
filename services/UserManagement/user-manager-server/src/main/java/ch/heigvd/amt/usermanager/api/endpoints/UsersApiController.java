@@ -6,6 +6,7 @@ import ch.heigvd.amt.usermanager.api.model.UserInput;
 import ch.heigvd.amt.usermanager.api.model.UserOutput;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
 import ch.heigvd.amt.usermanager.repositories.UserRepository;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -44,6 +45,14 @@ public class UsersApiController implements UsersApi {
         UserEntity newUserEntity = toUserEntity(user);
 
         //TODO: Ajouter le check de ADMIN ou pas avec le Token JWT
+
+//        try {
+//            if (JWT.isAdmin != user.getIsAdmin()){
+//                throw new ApiException(403, "You cannot perform this action as a non-admin user");
+//            }
+//        } catch (ApiException e){
+//            e.printStackTrace();
+//        }
 
         try {
             if (userRepository.existsById(newUserEntity.getEmail())) {
@@ -86,7 +95,7 @@ public class UsersApiController implements UsersApi {
      * @throws Exception
      */
     @GetMapping("/{email}")
-    public UserEntity getUserById(String email) throws Exception {
+    public UserEntity getUserById(@PathVariable String email) throws Exception {
         Optional<UserEntity> userEntity = userRepository.findById(email);
         if (userEntity.isPresent()){
             return userEntity.get();
@@ -128,27 +137,54 @@ public class UsersApiController implements UsersApi {
         return user;
     }
 
-    @PutMapping
-    public ResponseEntity<Object> updateUser(UserInput user) {
-        UserEntity newUserEntity = toUserEntity(user);
+    @PutMapping("/{email")
+    public ResponseEntity<Object> updateUser(@RequestBody UserInput user, @PathVariable String email) {
 
         //TODO : Controle JWT sur identite et retour de user qui modifie !
+        //TODO : Si le tokenn JWT n'est pas celui de l'utilisateur modifie alors on yield une erreur
+        //TODO : Si user est admin, il peut modifier le isBlocked. Sinon erreur
+        //TODO : Pseudo code fait en bas mais manque le JWT
+//        try {
+//            if (!user.getIsAdmin() != JWT.getIsAdmin) {
+//                throw new ApiException(400, "You cannot edit the admin parameter")
+//            }
+//        } catch (ApiException e) {
+//            e.printStackTrace();
+//        }
+
+//        if (user.getIsBlocked() != JWT.getIsBlocked) {
+//            try {
+//                if (!user.getIsAdmin()){
+//                    throw new ApiException(400, "You do not have the rights to perform this action");
+//                }
+//            } catch (ApiException e){
+//                e.printStackTrace();
+//            }
+//        }
+
+        Optional<UserEntity> userEntity = userRepository.findById(email);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{email}")
-                .buildAndExpand(newUserEntity.getEmail()).toUri();
+                .buildAndExpand(email).toUri();
         try {
-            if (!userRepository.existsById(newUserEntity.getEmail())){
+            if (!userRepository.existsById(email)){
                 throw new ApiException(404, "User does not exist. Impossible to update it");
             }
         } catch (ApiException e) {
             e.printStackTrace();
         }
-        // TODO : check si user qui modiifie est admin et si isBlocked est modifie en accordance ?
-        userRepository.save(newUserEntity);
+
+        userRepository.save(userEntity.get());
         return ResponseEntity.created(location).build();
     }
 
+    /**
+     * Deletes a User from his email only if the deleted User is the same as the one logged in
+     * @param email
+     * @return The deleted User
+     * @throws Exception
+     */
     @DeleteMapping("/{email}")
     public ResponseEntity<Object> deleteUser(String email) throws Exception {
 
@@ -161,7 +197,6 @@ public class UsersApiController implements UsersApi {
         if (!userRepository.existsById(email)){
             throw new Error("User does not exist. Impossible to delete it");
         } else {
-            // TODO : Check qui User qui modifie est le meme que celui qui est supprime
             userRepository.delete(getUserById(email));
             return ResponseEntity.created(location).build();
         }

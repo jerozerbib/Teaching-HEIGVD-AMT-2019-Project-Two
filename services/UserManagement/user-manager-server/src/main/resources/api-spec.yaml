@@ -71,17 +71,53 @@ paths:
           description: ressource not found
           schema:
             type: object
+  "/users/{email}":
+    get:
+      tags:
+        - "users"
+      summary: "Gets a user by his email"
+      description: ""
+      operationId: "getUserById"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          type: string
+          required: true
+          name: email
+          description: The email we need to Id the user
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/UserOutput'
+        400:
+          description: wrong format
+          schema:
+            type: object
+        403:
+          description: blocked
+          schema:
+            type: object
+        404:
+          description: ressource not found
+          schema:
+            type: object
     put:
       tags:
         - "users"
       summary: "Updates the ressource"
       operationId: "updateUser"
       parameters:
-        - name: email
+        - name: user
           in: body
           required: false
           schema:
             $ref: '#/definitions/UserInput'
+        - name: email
+          in: query
+          required: true
+          type: string
       responses:
         '201':
           description: updated
@@ -127,32 +163,6 @@ paths:
           description: ressource not found
           schema:
             type: object
-#  /users/{email}:
-#    get:
-#      tags:
-#        - "users"
-#      summary: "Get a user"
-#      description: ""
-#      operationId: "getUserById"
-#      produces:
-#        - "application/json"
-#      responses:
-#        200:
-#          description: "successful operation"
-#          schema:
-#            $ref: '#/definitions/UserOutput'
-#        400:
-#          description: wrong format
-#          schema:
-#            type: object
-#        403:
-#          description: blocked
-#          schema:
-#            type: object
-#        404:
-#          description: ressource not found
-#          schema:
-#            type: object
 definitions:
   User:
     type: "object"

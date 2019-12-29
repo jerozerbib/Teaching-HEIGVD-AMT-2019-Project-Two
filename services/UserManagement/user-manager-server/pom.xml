@@ -43,7 +43,7 @@
                         </goals>
                         <configuration>
                             <inputSpec>${basedir}/src/main/resources/api-spec.yaml</inputSpec>
-                            <language>spring</language>
+                            <generatorName>spring</generatorName>
                             <configOptions>
                                 <dateLibrary>joda</dateLibrary>
                                 <useBeanValidation>true</useBeanValidation>
