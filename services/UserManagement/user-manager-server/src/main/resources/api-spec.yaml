@@ -71,7 +71,7 @@ paths:
           description: ressource not found
           schema:
             type: object
-  "/users/{email}":
+  /users/{email}:
     get:
       tags:
         - "users"
@@ -103,66 +103,66 @@ paths:
           description: ressource not found
           schema:
             type: object
-    put:
-      tags:
-        - "users"
-      summary: "Updates the ressource"
-      operationId: "updateUser"
-      parameters:
-        - name: user
-          in: body
-          required: false
-          schema:
-            $ref: '#/definitions/UserInput'
-        - name: email
-          in: query
-          required: true
-          type: string
-      responses:
-        '201':
-          description: updated
-          schema:
-            type: object
-        400:
-          description: wrong format
-          schema:
-            type: object
-        403:
-          description: blocked
-          schema:
-            type: object
-        404:
-          description: ressource not found
-          schema:
-            type: object
-    delete:
-      tags:
-        - "users"
-      summary: "Deletes a given ressource"
-      operationId: "deleteUser"
-      parameters:
-        - name: user
-          in: body
-          required: true
-          schema:
-            type: object
-      responses:
-        201:
-          description: deleted
-          schema:
-            type: object
-        400:
-          description: wrong format
-          schema:
-            type: object
-        403:
-          description: blocked
-          schema:
-            type: object
-        404:
-          description: ressource not found
-          schema:
-            type: object
+#    put:
+#      tags:
+#        - "users"
+#      summary: "Updates the ressource"
+#      operationId: "updateUser"
+#      parameters:
+#        - name: user
+#          in: body
+#          required: false
+#          schema:
+#            $ref: '#/definitions/UserInput'
+#        - name: email
+#          in: query
+#          required: true
+#          type: string
+#      responses:
+#        '201':
+#          description: updated
+#          schema:
+#            type: object
+#        400:
+#          description: wrong format
+#          schema:
+#            type: object
+#        403:
+#          description: blocked
+#          schema:
+#            type: object
+#        404:
+#          description: ressource not found
+#          schema:
+#            type: object
+#    delete:
+#      tags:
+#        - "users"
+#      summary: "Deletes a given ressource"
+#      operationId: "deleteUser"
+#      parameters:
+#        - name: user
+#          in: body
+#          required: true
+#          schema:
+#            type: object
+#      responses:
+#        201:
+#          description: deleted
+#          schema:
+#            type: object
+#        400:
+#          description: wrong format
+#          schema:
+#            type: object
+#        403:
+#          description: blocked
+#          schema:
+#            type: object
+#        404:
+#          description: ressource not found
+#          schema:
+#            type: object
 definitions:
   User:
     type: "object"

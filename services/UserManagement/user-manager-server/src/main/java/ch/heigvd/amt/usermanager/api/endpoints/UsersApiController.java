@@ -6,9 +6,7 @@ import ch.heigvd.amt.usermanager.api.model.UserInput;
 import ch.heigvd.amt.usermanager.api.model.UserOutput;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
 import ch.heigvd.amt.usermanager.repositories.UserRepository;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,7 @@ import java.util.Optional;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-12-02T18:00:35.658Z")
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(value = "/users")
 public class UsersApiController implements UsersApi {
 
     // Source : https://howtodoinjava.com/spring-boot2/spring-boot-crud-hibernate/
@@ -54,13 +52,13 @@ public class UsersApiController implements UsersApi {
 //            e.printStackTrace();
 //        }
 
-        try {
-            if (userRepository.existsById(newUserEntity.getEmail())) {
-                throw new ApiException(409, "User already exist. Impossible to create it.");
-            }
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            if (userRepository.existsById(newUserEntity.getEmail())) {
+//                throw new ApiException(409, "User already exist. Impossible to create it.");
+//            }
+//        } catch (ApiException e) {
+//            e.printStackTrace();
+//        }
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{email}")
@@ -92,19 +90,19 @@ public class UsersApiController implements UsersApi {
      * Gets a user by his email
      * @param email of the user to get
      * @return A UserEntity
-     * @throws Exception
      */
     @GetMapping("/{email}")
-    public UserEntity getUserById(@PathVariable String email) throws Exception {
+    public ResponseEntity<UserOutput> getUserById(@PathVariable String email) {
         Optional<UserEntity> userEntity = userRepository.findById(email);
-        if (userEntity.isPresent()){
-            return userEntity.get();
-        } else {
-            throw new ApiException(404, "No employee record exist for given id");
+        try {
+            if (!userEntity.isPresent()) {
+                throw new ApiException(404, "No employee record exist for given id");
+            }
+        } catch (ApiException e){
+            e.printStackTrace();
         }
+        return ResponseEntity.ok(toUser(userEntity.get()));
     }
-
-
 
     /**
      * Gets all the Users from the database using the request method GET
@@ -137,7 +135,7 @@ public class UsersApiController implements UsersApi {
         return user;
     }
 
-    @PutMapping("/{email")
+    @PutMapping("/{email}")
     public ResponseEntity<Object> updateUser(@RequestBody UserInput user, @PathVariable String email) {
 
         //TODO : Controle JWT sur identite et retour de user qui modifie !
@@ -161,7 +159,6 @@ public class UsersApiController implements UsersApi {
 //                e.printStackTrace();
 //            }
 //        }
-
         Optional<UserEntity> userEntity = userRepository.findById(email);
 
         URI location = ServletUriComponentsBuilder
@@ -185,7 +182,7 @@ public class UsersApiController implements UsersApi {
      * @return The deleted User
      * @throws Exception
      */
-    @DeleteMapping("/{email}")
+    @DeleteMapping(value = "/{email}")
     public ResponseEntity<Object> deleteUser(String email) throws Exception {
 
         // TODO : Check JWT et retour User qui modifie
@@ -197,8 +194,9 @@ public class UsersApiController implements UsersApi {
         if (!userRepository.existsById(email)){
             throw new Error("User does not exist. Impossible to delete it");
         } else {
-            userRepository.delete(getUserById(email));
+//            userRepository.delete(email);
             return ResponseEntity.created(location).build();
         }
+
     }
 }
