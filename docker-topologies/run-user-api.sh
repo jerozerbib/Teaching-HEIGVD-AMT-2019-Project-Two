@@ -3,7 +3,8 @@ rm -r ../docker-images/user-manager-server/tmp
 mkdir ../docker-images/user-manager-server/tmp
 
 mvn clean package -f ../services/UserManagement/user-manager-server/pom.xml
-cp ../services/UserManagement/user-manager-server/target/user-manager-server*.jar ./tmp/
+cp ../services/UserManagement/user-manager-server/target/user-manager-server-1.0.0.jar ./tmp/
+cp ../services/UserManagement/user-manager-server/target/user-manager-server-1.0.0.jar ../docker-images/user-manager-server/tmp/
 
 docker build -t user-manager/user-manager-server ../docker-images/user-manager-server/
 
