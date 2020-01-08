@@ -23,7 +23,6 @@ import java.util.Optional;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-12-02T18:00:35.658Z")
 
 @RestController
-@RequestMapping(value = "/users")
 public class UsersApiController implements UsersApi {
 
     // Source : https://howtodoinjava.com/spring-boot2/spring-boot-crud-hibernate/
@@ -38,7 +37,6 @@ public class UsersApiController implements UsersApi {
      * @param user UserInput
      * @return a new Object
      */
-    @PostMapping
     public ResponseEntity<Object> createUser(@ApiParam(value = "", required = true) @Valid @RequestBody UserInput user) {
         UserEntity newUserEntity = toUserEntity(user);
 
@@ -52,13 +50,13 @@ public class UsersApiController implements UsersApi {
 //            e.printStackTrace();
 //        }
 
-//        try {
-//            if (userRepository.existsById(newUserEntity.getEmail())) {
-//                throw new ApiException(409, "User already exist. Impossible to create it.");
-//            }
-//        } catch (ApiException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            if (userRepository.existsById(newUserEntity.getEmail())) {
+                throw new ApiException(409, "User already exist. Impossible to create it.");
+            }
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{email}")
@@ -91,7 +89,6 @@ public class UsersApiController implements UsersApi {
      * @param email of the user to get
      * @return A UserEntity
      */
-    @GetMapping("/{email}")
     public ResponseEntity<UserOutput> getUserById(@PathVariable String email) {
         Optional<UserEntity> userEntity = userRepository.findById(email);
         try {
@@ -109,7 +106,6 @@ public class UsersApiController implements UsersApi {
      *
      * @return a List of UserOutputs
      */
-    @GetMapping
     public ResponseEntity<List<UserOutput>> getUsers() {
         //TODO : Rajouter le check ADMIN ou non avec le token
         List<UserOutput> users = new ArrayList<>();
@@ -135,8 +131,7 @@ public class UsersApiController implements UsersApi {
         return user;
     }
 
-    @PutMapping("/{email}")
-    public ResponseEntity<Object> updateUser(@RequestBody UserInput user, @PathVariable String email) {
+    public ResponseEntity<Object> updateUser(@RequestHeader String firstname, @PathVariable String email) {
 
         //TODO : Controle JWT sur identite et retour de user qui modifie !
         //TODO : Si le tokenn JWT n'est pas celui de l'utilisateur modifie alors on yield une erreur
@@ -161,29 +156,34 @@ public class UsersApiController implements UsersApi {
 //        }
         Optional<UserEntity> userEntity = userRepository.findById(email);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{email}")
-                .buildAndExpand(email).toUri();
+//        try {
+//            if (email != user.getEmail()) {
+//                throw new ApiException(403, "You are not authorized to edit this ressource");
+//            }
+//        } catch (ApiException e) {
+//            e.printStackTrace();
+//        }
+
         try {
-            if (!userRepository.existsById(email)){
+            if (!userEntity.isPresent()){
                 throw new ApiException(404, "User does not exist. Impossible to update it");
             }
         } catch (ApiException e) {
             e.printStackTrace();
         }
 
+        userEntity.get().setFirstName(firstname);
+
         userRepository.save(userEntity.get());
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Deletes a User from his email only if the deleted User is the same as the one logged in
      * @param email
      * @return The deleted User
-     * @throws Exception
      */
-    @DeleteMapping(value = "/{email}")
-    public ResponseEntity<Object> deleteUser(String email) throws Exception {
+    public ResponseEntity<Object> deleteUser(@PathVariable String email) {
 
         // TODO : Check JWT et retour User qui modifie
 
@@ -191,12 +191,18 @@ public class UsersApiController implements UsersApi {
                 .fromCurrentRequest().path("/{email}")
                 .buildAndExpand(email).toUri();
 
-        if (!userRepository.existsById(email)){
-            throw new Error("User does not exist. Impossible to delete it");
-        } else {
-//            userRepository.delete(email);
-            return ResponseEntity.created(location).build();
+        Optional<UserEntity> userEntity = userRepository.findById(email);
+
+        try {
+            if (!userEntity.isPresent()){
+                throw new ApiException(404, "User does not exist. Impossible to delete it");
+            } else {
+                userRepository.delete(userEntity.get());
+            }
+        } catch (ApiException e){
+            e.getMessage();
         }
 
+        return ResponseEntity.created(location).build();
     }
 }
