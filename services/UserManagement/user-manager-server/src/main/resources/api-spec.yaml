@@ -11,7 +11,40 @@ tags:
     description: "Everything about your users"
 schemes:
   - "http"
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
 paths:
+  /authenticate:
+    post:
+      tags:
+        - "auth"
+      summary: "Authentication"
+      description: ""
+      operationId: createAuthenticationToken
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/JwtRequest'
+      responses:
+        201:
+          description: token generated #TO CHANGE
+          schema:
+            type: object
+        403:
+          description: blocked
+          schema:
+            type: object
   /users:
     post:
       tags:
@@ -45,6 +78,8 @@ paths:
           schema:
             type: object
     get:
+      security:
+        - Bearer: []
       tags:
         - "users"
       summary: "Get the list of all users"
@@ -53,6 +88,8 @@ paths:
       produces:
         - "application/json"
       responses:
+        '401':
+          description: "Unauthorized"
         200:
           description: "successful operation"
           schema:
@@ -104,6 +141,8 @@ paths:
           schema:
             type: object
     patch:
+      security:
+        - Bearer: []
       tags:
         - "users"
       summary: "Updates the ressource"
@@ -195,3 +234,20 @@ definitions:
             type: "string"
           salt:
             type: "string"
+  JwtRequest:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+      password:
+        type: "string"
+
+  JwtResponse:
+      type: "object"
+      properties:
+        token:
+          type: "string"
+#components:
+#  responses:
+#    UnauthorizedError:
+#      description: Access token is missing or invalid

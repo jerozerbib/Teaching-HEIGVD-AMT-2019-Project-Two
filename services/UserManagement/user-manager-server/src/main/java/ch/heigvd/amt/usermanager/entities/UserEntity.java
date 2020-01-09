@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 
+
 @Setter
 @Getter
 @EqualsAndHashCode
@@ -17,6 +18,7 @@ public class UserEntity implements Serializable {
      * Default constructor
      */
     public UserEntity() {}
+    public UserEntity(String email, String password) { this.email = email; this.password = password;}
 
     @Id
     private String email;
