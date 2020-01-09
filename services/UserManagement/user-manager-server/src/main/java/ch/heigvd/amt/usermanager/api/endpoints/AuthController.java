@@ -1,77 +1,60 @@
 package ch.heigvd.amt.usermanager.api.endpoints;
 
-import ch.heigvd.amt.usermanager.api.model.UserInput;
-import ch.heigvd.amt.usermanager.api.model.JwtRequest;
-import ch.heigvd.amt.usermanager.api.model.JwtResponse;
-import ch.heigvd.amt.usermanager.api.security.JwtToken;
-import ch.heigvd.amt.usermanager.api.service.JwtUserDetailsService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
+import ch.heigvd.amt.usermanager.api.util.ApiResponseMessage;
+import ch.heigvd.amt.usermanager.configuration.JwtToken;
+import ch.heigvd.amt.usermanager.entities.UserEntity;
+import ch.heigvd.amt.usermanager.model.JwtRequest;
+import ch.heigvd.amt.usermanager.model.JwtResponse;
+import ch.heigvd.amt.usermanager.repositories.UserRepository;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.security.authentication.AuthenticationManager;
+import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
-@CrossOrigin
+@RequestMapping("/authenticate")
 public class AuthController {
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtToken jwtToken;
 
     @Autowired
-    private JwtUserDetailsService jwtUserDetailsService;
+    private UserRepository userRepository;
 
+    @PostMapping
+    public ResponseEntity<Object> createAuthenticationToken(@ApiParam(value = "" ,required=true )  @Valid @RequestBody ch.heigvd.amt.usermanager.api.model.JwtRequest user) throws Exception {
 
-    @PostMapping(value = "/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+        String email = user.getEmail();
+        String password = user.getPassword();
 
-
-        authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
-
-        final UserDetails userDetails = jwtUserDetailsService
-
-                .loadUserByUsername(authenticationRequest.getEmail());
-
-        final String token = jwtToken.generateToken(userDetails);
-
-        return ResponseEntity.ok(new JwtResponse(token));
-
-    }
-
-    private void authenticate(String username, String password) throws Exception {
-
-        try {
-
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-
-        } catch (DisabledException e) {
-
-            throw new Exception("USER_DISABLED", e);
-
-        } catch (BadCredentialsException e) {
-
-            throw new Exception("INVALID_CREDENTIALS", e);
-
+        if(email == null || password == null ){
+           // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Malformated request");
+            throw new ApiException(HttpStatus.BAD_REQUEST.value(),"Malformated reqsadasdadsauest");
         }
+
+        Optional<UserEntity> userOpt = userRepository.findById(email);
+
+        if(!userOpt.isPresent()){
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+        }
+
+        UserEntity userEntity = (UserEntity) userOpt.get();
+
+        if(email.equals(user.getEmail()) && password.equals(user.getPassword())){
+            String token = jwtToken.generateToken(userEntity);
+            return ResponseEntity.status(HttpStatus.OK).body(new JwtResponse(token));
+        }
+
+        return null;
 
     }
 
