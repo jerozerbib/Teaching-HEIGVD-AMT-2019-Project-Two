@@ -37,25 +37,23 @@ public class AuthController {
 
         if(email == null || password == null ){
            // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Malformated request");
-            throw new ApiException(HttpStatus.BAD_REQUEST.value(),"Malformated reqsadasdadsauest");
+            throw new ApiException(HttpStatus.BAD_REQUEST.value(),"Malformated request");
         }
 
         Optional<UserEntity> userOpt = userRepository.findById(email);
 
         if(!userOpt.isPresent()){
-
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
         }
 
-        UserEntity userEntity = (UserEntity) userOpt.get();
+        UserEntity userEntity = userOpt.get();
 
-        if(email.equals(user.getEmail()) && password.equals(user.getPassword())){
+        if(email.equals(userEntity.getEmail()) && password.equals(userEntity.getPassword())){
             String token = jwtToken.generateToken(userEntity);
             return ResponseEntity.status(HttpStatus.OK).body(new JwtResponse(token));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email or password is not right.");
         }
-
-        return null;
-
     }
 
 }

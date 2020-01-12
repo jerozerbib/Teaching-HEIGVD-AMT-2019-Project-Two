@@ -1,7 +1,6 @@
 package ch.heigvd.amt.usermanager.api.endpoints;
 
 import ch.heigvd.amt.usermanager.api.UsersApi;
-import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
 import ch.heigvd.amt.usermanager.api.model.UserInput;
 import ch.heigvd.amt.usermanager.api.model.UserOutput;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
@@ -10,8 +9,12 @@ import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -50,12 +53,8 @@ public class UsersApiController implements UsersApi {
 //            e.printStackTrace();
 //        }
 
-        try {
-            if (userRepository.existsById(newUserEntity.getEmail())) {
-                throw new ApiException(409, "User already exist. Impossible to create it.");
-            }
-        } catch (ApiException e) {
-            e.printStackTrace();
+        if (userRepository.existsById(newUserEntity.getEmail())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists.");
         }
 
         URI location = ServletUriComponentsBuilder
@@ -89,15 +88,12 @@ public class UsersApiController implements UsersApi {
      * @param email of the user to get
      * @return A UserEntity
      */
-    public ResponseEntity<UserOutput> getUserById(@PathVariable String email) {
+    public ResponseEntity<Object> getUserById(@PathVariable String email) {
         Optional<UserEntity> userEntity = userRepository.findById(email);
-        try {
-            if (!userEntity.isPresent()) {
-                throw new ApiException(404, "No employee record exist for given id");
-            }
-        } catch (ApiException e){
-            e.printStackTrace();
+        if (!userEntity.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist. Impossible to update it");
         }
+
         return ResponseEntity.ok(toUser(userEntity.get()));
     }
 
@@ -131,7 +127,7 @@ public class UsersApiController implements UsersApi {
         return user;
     }
 
-    public ResponseEntity<Object> updateUser(@RequestHeader String firstname, @PathVariable String email) {
+    public ResponseEntity<Object> updateUser(@RequestHeader String password, @PathVariable String email) {
 
         //TODO : Controle JWT sur identite et retour de user qui modifie !
         //TODO : Si le tokenn JWT n'est pas celui de l'utilisateur modifie alors on yield une erreur
@@ -164,15 +160,11 @@ public class UsersApiController implements UsersApi {
 //            e.printStackTrace();
 //        }
 
-        try {
-            if (!userEntity.isPresent()){
-                throw new ApiException(404, "User does not exist. Impossible to update it");
-            }
-        } catch (ApiException e) {
-            e.printStackTrace();
+        if (!userEntity.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist. Impossible to update it");
         }
 
-        userEntity.get().setFirstName(firstname);
+        userEntity.get().setPassword(password);
 
         userRepository.save(userEntity.get());
         return ResponseEntity.ok().build();
@@ -193,14 +185,10 @@ public class UsersApiController implements UsersApi {
 
         Optional<UserEntity> userEntity = userRepository.findById(email);
 
-        try {
-            if (!userEntity.isPresent()){
-                throw new ApiException(404, "User does not exist. Impossible to delete it");
-            } else {
-                userRepository.delete(userEntity.get());
-            }
-        } catch (ApiException e){
-            e.getMessage();
+        if (!userEntity.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist. Impossible to update it");
+        } else {
+            userRepository.delete(userEntity.get());
         }
 
         return ResponseEntity.created(location).build();

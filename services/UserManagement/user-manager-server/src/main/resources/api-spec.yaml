@@ -17,7 +17,6 @@ securityDefinitions:
     type: apiKey
     name: Authorization
     in: header
-
 paths:
   /authenticate:
     post:
@@ -38,9 +37,9 @@ paths:
             $ref: '#/definitions/JwtRequest'
       responses:
         201:
-          description: token generated #TO CHANGE
+          description: token generated
           schema:
-            type: object
+            $ref: '#/definitions/JwtResponse'
         403:
           description: blocked
           schema:
@@ -95,7 +94,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/UserOutput"
+              $ref: '#/definitions/UserOutput'
         400:
           description: wrong format
           schema:
@@ -127,7 +126,7 @@ paths:
         200:
           description: "successful operation"
           schema:
-            $ref: '#/definitions/UserOutput'
+            type: object
         400:
           description: wrong format
           schema:
@@ -153,7 +152,7 @@ paths:
       consumes:
         - 'application/json'
       parameters:
-        - name: firstname
+        - name: password
           in: header
           required: true
           type: string
@@ -241,7 +240,6 @@ definitions:
         type: "string"
       password:
         type: "string"
-
   JwtResponse:
       type: "object"
       properties:
