@@ -21,12 +21,18 @@ services:
       
   user-manager:
     image: user-manager/user-manager-server
+    container_name: "userAPI"
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       - mysql
     links:
       - mysql
+    labels:
+    # Explicitly tell Traefik to expose this container
+      - "traefik.enable=true"
+      # The domain the service will respond to
+      - "traefik.http.routers.user-manager.rule=Host(`user-manager.localhost`)"
       
   phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
@@ -40,5 +46,22 @@ services:
             - PMA_PASSWORD=root
         ports:
             - "6060:80"
+  traefik:
+    image: traefik:v2.0
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  whoami:
+    # A container that exposes an API to show its IP address
+    image: containous/whoami
+    labels:
+      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
 volumes:
   user_mysqldb:
