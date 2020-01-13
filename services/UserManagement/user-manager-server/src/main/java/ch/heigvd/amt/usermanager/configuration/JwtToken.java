@@ -36,6 +36,10 @@ public class JwtToken implements Serializable {
         return getAllClaimsFromToken(token).get("isAdmin", Integer.class);
     }
 
+    public int getIsBlockedFromToken(String token) {
+        return getAllClaimsFromToken(token).get("isBlocked", Integer.class);
+    }
+
 
 
     public Date getExpirationDateFromToken(String token) {
