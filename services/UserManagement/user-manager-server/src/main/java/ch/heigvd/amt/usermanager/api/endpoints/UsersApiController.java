@@ -1,6 +1,7 @@
 package ch.heigvd.amt.usermanager.api.endpoints;
 
 import ch.heigvd.amt.usermanager.api.UsersApi;
+import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
 import ch.heigvd.amt.usermanager.api.model.UserInput;
 import ch.heigvd.amt.usermanager.api.model.UserOutput;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
@@ -32,6 +33,7 @@ public class UsersApiController implements UsersApi {
 
     private static final Logger log = LoggerFactory.getLogger(UsersApiController.class);
 
+
     @Autowired
     UserRepository userRepository;
 
@@ -40,28 +42,19 @@ public class UsersApiController implements UsersApi {
      * @param user UserInput
      * @return a new Object
      */
-    public ResponseEntity<Object> createUser(@ApiParam(value = "", required = true) @Valid @RequestBody UserInput user) {
-        UserEntity newUserEntity = toUserEntity(user);
+    public ResponseEntity<Object> createUser(@ApiParam(value = "", required = true) @Valid @RequestBody UserInput user) throws ApiException {
+        UserEntity userEntity = toUserEntity(user);
 
-        //TODO: Ajouter le check de ADMIN ou pas avec le Token JWT
-
-//        try {
-//            if (JWT.isAdmin != user.getIsAdmin()){
-//                throw new ApiException(403, "You cannot perform this action as a non-admin user");
-//            }
-//        } catch (ApiException e){
-//            e.printStackTrace();
-//        }
-
-        if (userRepository.existsById(newUserEntity.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists.");
+        if (userRepository.existsById(userEntity.getEmail())) {
+            throw new ApiException(HttpStatus.CONFLICT,"User already exists.");
         }
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{email}")
-                .buildAndExpand(newUserEntity.getEmail()).toUri();
+                .buildAndExpand(userEntity.getEmail()).toUri();
 
-        userRepository.save(newUserEntity);
+        userRepository.save(userEntity);
+
         return ResponseEntity.created(location).build();
     }
 
@@ -78,8 +71,8 @@ public class UsersApiController implements UsersApi {
         entity.setLastName(user.getLastName());
         entity.setPassword(user.getPassword());
         entity.setSalt(user.getSalt());
-        entity.setAdmin(user.getIsAdmin());
-        entity.setBlocked(user.getIsBlocked());
+        entity.setIsAdmin(user.getIsAdmin());
+        entity.setIsBlocked(user.getIsBlocked());
         return entity;
     }
 
@@ -88,13 +81,13 @@ public class UsersApiController implements UsersApi {
      * @param email of the user to get
      * @return A UserEntity
      */
-    public ResponseEntity<Object> getUserById(@PathVariable String email) {
-        Optional<UserEntity> userEntity = userRepository.findById(email);
-        if (!userEntity.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist. Impossible to update it");
-        }
+    public ResponseEntity<Object> getUserById(@PathVariable String email) throws ApiException{
 
-        return ResponseEntity.ok(toUser(userEntity.get()));
+        UserEntity userEntity = userRepository.findById(email).orElse(null);
+        if (userEntity == null){
+            throw new ApiException(HttpStatus.NOT_FOUND,"User not found");
+        }
+        return ResponseEntity.ok(toUser(userEntity));
     }
 
     /**
@@ -103,7 +96,6 @@ public class UsersApiController implements UsersApi {
      * @return a List of UserOutputs
      */
     public ResponseEntity<List<UserOutput>> getUsers() {
-        //TODO : Rajouter le check ADMIN ou non avec le token
         List<UserOutput> users = new ArrayList<>();
         for (UserEntity userEntity : userRepository.findAll()) {
             users.add(toUser(userEntity));
@@ -122,8 +114,8 @@ public class UsersApiController implements UsersApi {
         user.setEmail(entity.getEmail());
         user.setFirstName(entity.getFirstName());
         user.setLastName(entity.getLastName());
-        user.setIsAdmin(entity.isAdmin());
-        user.setIsBlocked(entity.isBlocked());
+        user.setIsAdmin(entity.getIsAdmin());
+        user.setIsBlocked(entity.getIsBlocked());
         return user;
     }
 
@@ -161,6 +153,7 @@ public class UsersApiController implements UsersApi {
 //        }
 
         if (!userEntity.isPresent()){
+
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist. Impossible to update it");
         }
 

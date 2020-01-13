@@ -46,6 +46,8 @@ paths:
             type: object
   /users:
     post:
+      security:
+      - Bearer: []
       tags:
         - "users"
       summary: "Create a new user"
@@ -78,7 +80,7 @@ paths:
             type: object
     get:
       security:
-        - Bearer: []
+      - Bearer: []
       tags:
         - "users"
       summary: "Get the list of all users"
@@ -109,6 +111,8 @@ paths:
             type: object
   /users/{email}:
     get:
+      security:
+      - Bearer: []
       tags:
         - "users"
       summary: "Gets a user by his email"
@@ -141,7 +145,7 @@ paths:
             type: object
     patch:
       security:
-        - Bearer: []
+      - Bearer: []
       tags:
         - "users"
       summary: "Updates the ressource"
@@ -179,6 +183,8 @@ paths:
           schema:
             type: object
     delete:
+      security:
+      - Bearer: []
       tags:
         - "users"
       summary: "Deletes a given ressource"
@@ -217,9 +223,9 @@ definitions:
       lastName:
         type: "string"
       isAdmin:
-        type: "boolean"
+        type: "integer"
       isBlocked:
-        type: "boolean"
+        type: "integer"
   UserOutput:
     allOf:
       - type: "object"
@@ -240,6 +246,7 @@ definitions:
         type: "string"
       password:
         type: "string"
+
   JwtResponse:
       type: "object"
       properties:

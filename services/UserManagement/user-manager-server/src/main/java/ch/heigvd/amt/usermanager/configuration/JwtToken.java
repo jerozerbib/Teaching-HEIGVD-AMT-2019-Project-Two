@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ public class JwtToken implements Serializable {
 
     private static final long serialVersionUID = -2550185165626007488L;
 
+    // TODO Check validity
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
     @Value("${jwt.secret}")
@@ -29,6 +31,11 @@ public class JwtToken implements Serializable {
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
+
+    public int getIsAdminFromToken(String token) {
+        return getAllClaimsFromToken(token).get("isAdmin", Integer.class);
+    }
+
 
 
     public Date getExpirationDateFromToken(String token) {
@@ -54,6 +61,8 @@ public class JwtToken implements Serializable {
 
     public String generateToken(UserEntity user) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("isAdmin", user.getIsAdmin());
+        claims.put("isBlocked",user.getIsBlocked());
         return doGenerateToken(claims, user.getEmail());
     }
 
@@ -70,4 +79,10 @@ public class JwtToken implements Serializable {
         return (username.equals(user.getEmail()) && !isTokenExpired(token));
     }
 
+    public void verify(String token) {
+        //This line will throw an exception if it is not a signed JWS (as expected)
+        Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(secret))
+                .parseClaimsJws(token).getBody();
+    }
 }

@@ -1,0 +1,41 @@
+package ch.heigvd.amt.usermanager.api.interceptor;
+
+
+import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
+import ch.heigvd.amt.usermanager.configuration.JwtToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@Component
+public class AuthInterceptor implements HandlerInterceptor {
+
+    @Autowired
+    JwtToken jwtToken;
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ApiException {
+
+        String header = request.getHeader("Authorization");
+        if(header == null){
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "You are not authenticated.");
+        }
+
+        if(!header.startsWith("Bearer ")){
+            throw new ApiException(HttpStatus.UNAUTHORIZED,"Wrong method of authentication");
+        }
+
+        String token = header.split(" ")[1];
+        try {
+            jwtToken.verify(token);
+        }catch (Exception ex){
+            throw new ApiException(HttpStatus.UNAUTHORIZED,"Authentication failed");
+        }
+
+        return true;
+    }
+}

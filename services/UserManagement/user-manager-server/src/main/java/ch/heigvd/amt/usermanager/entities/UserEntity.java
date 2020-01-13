@@ -26,6 +26,6 @@ public class UserEntity implements Serializable {
     private String lastName;
     private String password;
     private String salt;
-    private boolean isAdmin;
-    private boolean isBlocked;
+    private int isAdmin;
+    private int isBlocked;
 }
