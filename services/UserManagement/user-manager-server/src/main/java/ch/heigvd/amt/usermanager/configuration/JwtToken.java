@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import java.io.Serializable;
 import java.util.Date;
@@ -28,7 +29,7 @@ public class JwtToken implements Serializable {
     private String secret;
 
 
-    public String getUsernameFromToken(String token) {
+    public String getEmailFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
@@ -39,8 +40,6 @@ public class JwtToken implements Serializable {
     public int getIsBlockedFromToken(String token) {
         return getAllClaimsFromToken(token).get("isBlocked", Integer.class);
     }
-
-
 
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
@@ -79,7 +78,7 @@ public class JwtToken implements Serializable {
 
 
     public Boolean validateToken(String token, UserEntity user) {
-        final String username = getUsernameFromToken(token);
+        final String username = getEmailFromToken(token);
         return (username.equals(user.getEmail()) && !isTokenExpired(token));
     }
 
@@ -88,5 +87,9 @@ public class JwtToken implements Serializable {
         Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(secret))
                 .parseClaimsJws(token).getBody();
+    }
+
+    public String getToken(HttpServletRequest req){
+        return req.getHeader("Authorization").split(" ")[1];
     }
 }

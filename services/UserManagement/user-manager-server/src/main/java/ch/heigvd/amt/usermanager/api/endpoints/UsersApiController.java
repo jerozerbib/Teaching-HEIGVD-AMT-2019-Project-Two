@@ -4,6 +4,7 @@ import ch.heigvd.amt.usermanager.api.UsersApi;
 import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
 import ch.heigvd.amt.usermanager.api.model.UserInput;
 import ch.heigvd.amt.usermanager.api.model.UserOutput;
+import ch.heigvd.amt.usermanager.api.service.UserService;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
 import ch.heigvd.amt.usermanager.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
@@ -37,22 +38,25 @@ public class UsersApiController implements UsersApi {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    UserService userService;
+
     /**
      * Creates a new User from a UserInput using the request method POST
      * @param user UserInput
      * @return a new Object
      */
     public ResponseEntity<Object> createUser(@ApiParam(value = "", required = true) @Valid @RequestBody UserInput user) throws ApiException {
-        UserEntity userEntity = toUserEntity(user);
 
-        if (userRepository.existsById(userEntity.getEmail())) {
+        if (userRepository.existsById(user.getEmail())) {
             throw new ApiException(HttpStatus.CONFLICT,"User already exists.");
         }
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{email}")
-                .buildAndExpand(userEntity.getEmail()).toUri();
+                .buildAndExpand(user.getEmail()).toUri();
 
+        UserEntity userEntity = toUserEntity(user);
         userRepository.save(userEntity);
 
         return ResponseEntity.created(location).build();
@@ -83,10 +87,7 @@ public class UsersApiController implements UsersApi {
      */
     public ResponseEntity<Object> getUserById(@PathVariable String email) throws ApiException{
 
-        UserEntity userEntity = userRepository.findById(email).orElse(null);
-        if (userEntity == null){
-            throw new ApiException(HttpStatus.NOT_FOUND,"User not found");
-        }
+        UserEntity userEntity = userService.getUserByEmail(email);
         return ResponseEntity.ok(toUser(userEntity));
     }
 
@@ -119,47 +120,10 @@ public class UsersApiController implements UsersApi {
         return user;
     }
 
-    public ResponseEntity<Object> updateUser(@RequestHeader String password, @PathVariable String email) {
-
-        //TODO : Controle JWT sur identite et retour de user qui modifie !
-        //TODO : Si le tokenn JWT n'est pas celui de l'utilisateur modifie alors on yield une erreur
-        //TODO : Si user est admin, il peut modifier le isBlocked. Sinon erreur
-        //TODO : Pseudo code fait en bas mais manque le JWT
-//        try {
-//            if (!user.getIsAdmin() != JWT.getIsAdmin) {
-//                throw new ApiException(400, "You cannot edit the admin parameter")
-//            }
-//        } catch (ApiException e) {
-//            e.printStackTrace();
-//        }
-
-//        if (user.getIsBlocked() != JWT.getIsBlocked) {
-//            try {
-//                if (!user.getIsAdmin()){
-//                    throw new ApiException(400, "You do not have the rights to perform this action");
-//                }
-//            } catch (ApiException e){
-//                e.printStackTrace();
-//            }
-//        }
-        Optional<UserEntity> userEntity = userRepository.findById(email);
-
-//        try {
-//            if (email != user.getEmail()) {
-//                throw new ApiException(403, "You are not authorized to edit this ressource");
-//            }
-//        } catch (ApiException e) {
-//            e.printStackTrace();
-//        }
-
-        if (!userEntity.isPresent()){
-
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist. Impossible to update it");
-        }
-
-        userEntity.get().setPassword(password);
-
-        userRepository.save(userEntity.get());
+    public ResponseEntity<Object> updateUser(@RequestHeader String password, @PathVariable String email) throws ApiException {
+        UserEntity userEntity = userService.getUserByEmail(email);
+        userEntity.setPassword(password);
+        userRepository.save(userEntity);
         return ResponseEntity.ok().build();
     }
 
@@ -168,22 +132,14 @@ public class UsersApiController implements UsersApi {
      * @param email
      * @return The deleted User
      */
-    public ResponseEntity<Object> deleteUser(@PathVariable String email) {
-
-        // TODO : Check JWT et retour User qui modifie
+    public ResponseEntity<Object> deleteUser(@PathVariable String email) throws ApiException {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{email}")
                 .buildAndExpand(email).toUri();
 
-        Optional<UserEntity> userEntity = userRepository.findById(email);
-
-        if (!userEntity.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist. Impossible to update it");
-        } else {
-            userRepository.delete(userEntity.get());
-        }
-
+        UserEntity userEntity = userService.getUserByEmail(email);
+        userRepository.delete(userEntity);
         return ResponseEntity.created(location).build();
     }
 }

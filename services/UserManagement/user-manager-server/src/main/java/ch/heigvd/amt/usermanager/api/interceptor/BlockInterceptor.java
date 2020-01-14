@@ -20,8 +20,10 @@ public class BlockInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ApiException {
 
-        String token = request.getHeader("Authorization").split(" ")[1];
-        if(jwtToken.getIsBlockedFromToken(token) == 1){
+        String token = jwtToken.getToken(request);
+        int blocked = jwtToken.getIsBlockedFromToken(token);
+
+        if(blocked == 1){
             throw new ApiException(HttpStatus.FORBIDDEN, "User is blocked");
         }
 
