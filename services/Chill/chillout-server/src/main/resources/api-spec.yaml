@@ -7,35 +7,6 @@ basePath: /api
 schemes:
   - http
 paths:
-  /clients:
-    post:
-      description: create a client
-      operationId: createClient
-      consumes:
-        - application/json
-      parameters:
-        - name: user
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/ClientInput'
-      responses:
-        '201':
-          description: created
-          schema:
-            type: object
-    get:
-      description: get the list of all clients
-      operationId: getClients
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: success
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/ClientOutput'
   /products:
     post:
       description: create a product
@@ -82,29 +53,8 @@ definitions:
   Client:
     type: object
     properties:
-      name:
+      email:
         type: string
-      username:
-        type: string
-  ClientInput:
-    allOf:
-      - $ref: '#/definitions/Client'
-      - type: object
-      - properties:
-          password:
-            type: string
-          salt:
-            type: string
-          isAdmin:
-            type: boolean
-  ClientOutput:
-    allOf:
-      - $ref: '#/definitions/Client'
-      - type: object
-      - properties:
-          id:
-            type: integer
-            format: int64
   Product:
     type: object
     properties:
@@ -143,7 +93,7 @@ definitions:
         type: integer
         format: int64
       client:
-        $ref: '#/definitions/ClientOutput'
+        $ref: '#/definitions/Client'
       orderItems:
         type: array
         items:
