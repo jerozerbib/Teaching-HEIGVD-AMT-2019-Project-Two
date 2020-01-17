@@ -3,6 +3,7 @@ package ch.heigvd.amt.usermanager.api.service;
 import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
 import ch.heigvd.amt.usermanager.api.model.UserInput;
 import ch.heigvd.amt.usermanager.api.model.UserOutput;
+import ch.heigvd.amt.usermanager.api.util.PasswordHash;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
 import ch.heigvd.amt.usermanager.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    private PasswordHash passwordHash = new PasswordHash(5);
 
     public UserEntity getUserByEmail(String email) throws ApiException {
         UserEntity userEntity = userRepository.findById(email).orElse(null);
@@ -65,7 +68,7 @@ public class UserService {
     public UserEntity toUserEntity(UserInput user) {
         UserEntity entity = new UserEntity();
         entity.setEmail(user.getEmail());
-        entity.setPassword(user.getPassword());
+        entity.setPassword(passwordHash.hash(user.getPassword()));
         entity.setIsAdmin(user.getIsAdmin());
         entity.setIsBlocked(user.getIsBlocked());
         return entity;

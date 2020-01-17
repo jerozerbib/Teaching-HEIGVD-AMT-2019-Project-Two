@@ -5,14 +5,13 @@ import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
 import ch.heigvd.amt.usermanager.api.model.UserInput;
 import ch.heigvd.amt.usermanager.api.model.UserOutput;
 import ch.heigvd.amt.usermanager.api.service.UserService;
+import ch.heigvd.amt.usermanager.api.util.PasswordHash;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
 import ch.heigvd.amt.usermanager.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,7 +19,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-12-02T18:00:35.658Z")
@@ -31,7 +29,7 @@ public class UsersApiController implements UsersApi {
     // Source : https://howtodoinjava.com/spring-boot2/spring-boot-crud-hibernate/
 
     private static final Logger log = LoggerFactory.getLogger(UsersApiController.class);
-
+    private PasswordHash passwordHash = new PasswordHash(5);
 
     @Autowired
     UserRepository userRepository;
@@ -77,9 +75,15 @@ public class UsersApiController implements UsersApi {
         return ResponseEntity.ok(userService.toUser(userEntity));
     }
 
-    public ResponseEntity<Object> updateUser(@RequestHeader String password, @PathVariable String email) throws ApiException {
+    public ResponseEntity<Object> updateUser(@ApiParam(value = "The email of the user",required=true) @PathVariable("email") String email,@ApiParam(value = "") @Valid @RequestParam(value = "password", required = false) String password,@ApiParam(value = "" ) @RequestHeader(value="isBlocked", required=false) String isBlocked) throws ApiException {
         UserEntity userEntity = userService.getUserByEmail(email);
-        userEntity.setPassword(password);
+
+        if (isBlocked != null){
+            userEntity.setIsBlocked(Integer.parseInt(isBlocked));
+        }
+        if (password != null){
+            userEntity.setPassword(passwordHash.hash(password));
+        }
         userRepository.save(userEntity);
         return ResponseEntity.ok().build();
     }
