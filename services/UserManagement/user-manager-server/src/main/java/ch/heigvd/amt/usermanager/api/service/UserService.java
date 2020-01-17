@@ -6,8 +6,14 @@ import ch.heigvd.amt.usermanager.api.model.UserOutput;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
 import ch.heigvd.amt.usermanager.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -38,6 +44,18 @@ public class UserService {
         userRepository.delete(userEntity);
     }
 
+    public List<UserOutput> getAllUsers(int numPage, int pageSize) {
+
+        Pageable paging = PageRequest.of(numPage,pageSize);
+        Page<UserOutput> pagedResult = userRepository.findAll(paging);
+
+        if(pagedResult.hasContent()){
+            return pagedResult.getContent();
+        }else {
+            return new ArrayList<>();
+        }
+    }
+
     /**
      * Converts a UserInput into a UserEntity
      *
@@ -47,8 +65,6 @@ public class UserService {
     public UserEntity toUserEntity(UserInput user) {
         UserEntity entity = new UserEntity();
         entity.setEmail(user.getEmail());
-        entity.setFirstName(user.getFirstName());
-        entity.setLastName(user.getLastName());
         entity.setPassword(user.getPassword());
         entity.setIsAdmin(user.getIsAdmin());
         entity.setIsBlocked(user.getIsBlocked());
@@ -64,8 +80,6 @@ public class UserService {
     public UserOutput toUser(UserEntity entity) {
         UserOutput user = new UserOutput();
         user.setEmail(entity.getEmail());
-        user.setFirstName(entity.getFirstName());
-        user.setLastName(entity.getLastName());
         user.setIsAdmin(entity.getIsAdmin());
         user.setIsBlocked(entity.getIsBlocked());
         return user;

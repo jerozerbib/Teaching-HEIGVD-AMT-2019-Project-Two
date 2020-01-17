@@ -11,15 +11,14 @@ import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,11 +60,9 @@ public class UsersApiController implements UsersApi {
      *
      * @return a List of UserOutputs
      */
-    public ResponseEntity<List<UserOutput>> getUsers() {
-        List<UserOutput> users = new ArrayList<>();
-        for (UserEntity userEntity : userRepository.findAll()) {
-            users.add(userService.toUser(userEntity));
-        }
+    public ResponseEntity<List<UserOutput>> getUsers(@Min(1)@ApiParam(value = "Number of the page", defaultValue = "1") @Valid @RequestParam(value = "page", required = false, defaultValue="1") Integer page,@Min(1)@ApiParam(value = "Size of the page", defaultValue = "20") @Valid @RequestParam(value = "pageSize", required = false, defaultValue="20") Integer pageSize) throws ApiException {
+
+        List<UserOutput> users = userService.getAllUsers(page,page);
         return ResponseEntity.ok(users);
     }
 
@@ -74,20 +71,15 @@ public class UsersApiController implements UsersApi {
      * @param email of the user to get
      * @return A UserEntity
      */
-    public ResponseEntity<Object> getUserById(@PathVariable String email) throws ApiException{
+    public ResponseEntity<UserOutput> getUserById(@ApiParam(value = "The email of the user",required=true) @PathVariable("email") String email) throws ApiException{
 
         UserEntity userEntity = userService.getUserByEmail(email);
         return ResponseEntity.ok(userService.toUser(userEntity));
     }
 
-    public ResponseEntity<Object> updateUser(@ApiParam(value = "The email we need to Id the user",required=true) @PathVariable("email") String email,@ApiParam(value = "" ) @RequestHeader(value="password", required=false) String password,@ApiParam(value = "" ) @RequestHeader(value="isBlocked", required=false) String isBlocked) throws Exception {
+    public ResponseEntity<Object> updateUser(@RequestHeader String password, @PathVariable String email) throws ApiException {
         UserEntity userEntity = userService.getUserByEmail(email);
-        if (!isBlocked.equals("")){
-            userEntity.setIsBlocked(Integer.parseInt(isBlocked));
-        }
-        if (!password.equals("")){
-            userEntity.setPassword(password);
-        }
+        userEntity.setPassword(password);
         userRepository.save(userEntity);
         return ResponseEntity.ok().build();
     }
@@ -97,7 +89,7 @@ public class UsersApiController implements UsersApi {
      * @param email
      * @return The deleted User
      */
-    public ResponseEntity<Object> deleteUser(@PathVariable String email) throws ApiException {
+    public ResponseEntity<Object> deleteUser(@ApiParam(value = "The email of the user",required=true) @PathVariable("email") String email)  throws ApiException {
 
         userService.deleteUserByEmail(email);
 

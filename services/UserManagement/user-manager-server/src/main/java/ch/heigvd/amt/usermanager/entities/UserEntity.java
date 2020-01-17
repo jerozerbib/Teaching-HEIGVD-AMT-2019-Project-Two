@@ -22,8 +22,6 @@ public class UserEntity implements Serializable {
 
     @Id
     private String email;
-    private String firstName;
-    private String lastName;
     private String password;
     private int isAdmin;
     private int isBlocked;
