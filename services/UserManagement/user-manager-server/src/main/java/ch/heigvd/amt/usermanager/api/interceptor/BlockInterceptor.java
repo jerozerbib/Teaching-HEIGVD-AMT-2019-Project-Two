@@ -2,7 +2,7 @@ package ch.heigvd.amt.usermanager.api.interceptor;
 
 
 import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
-import ch.heigvd.amt.usermanager.configuration.JwtToken;
+import ch.heigvd.amt.usermanager.api.util.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

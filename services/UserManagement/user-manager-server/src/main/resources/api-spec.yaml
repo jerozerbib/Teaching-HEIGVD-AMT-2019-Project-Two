@@ -3,15 +3,10 @@ info:
   description: "This is the user manager API for AMT Project Two"
   version: "1.0.0"
   title: "Users"
-
 host: localhost:8080
 basePath: /api
-tags:
-  - name: "users"
-    description: "Everything about your users"
 schemes:
   - "http"
-
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -236,8 +231,6 @@ definitions:
       - type: "object"
       - properties:
           password:
-            type: "string"
-          salt:
             type: "string"
   JwtRequest:
     type: "object"

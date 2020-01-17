@@ -23,7 +23,6 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-12-02T18:00:35.658Z")
 
@@ -48,47 +47,13 @@ public class UsersApiController implements UsersApi {
      */
     public ResponseEntity<Object> createUser(@ApiParam(value = "", required = true) @Valid @RequestBody UserInput user) throws ApiException {
 
-        if (userRepository.existsById(user.getEmail())) {
-            throw new ApiException(HttpStatus.CONFLICT,"User already exists.");
-        }
+        UserEntity userEntity = userService.createUser(user);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{email}")
-                .buildAndExpand(user.getEmail()).toUri();
-
-        UserEntity userEntity = toUserEntity(user);
-        userRepository.save(userEntity);
+                .buildAndExpand(userEntity.getEmail()).toUri();
 
         return ResponseEntity.created(location).build();
-    }
-
-    /**
-     * Converts a UserInput into a UserEntity
-     *
-     * @param user to convert
-     * @return a UserEntity
-     */
-    private UserEntity toUserEntity(@Valid UserInput user) {
-        UserEntity entity = new UserEntity();
-        entity.setEmail(user.getEmail());
-        entity.setFirstName(user.getFirstName());
-        entity.setLastName(user.getLastName());
-        entity.setPassword(user.getPassword());
-        entity.setSalt(user.getSalt());
-        entity.setIsAdmin(user.getIsAdmin());
-        entity.setIsBlocked(user.getIsBlocked());
-        return entity;
-    }
-
-    /**
-     * Gets a user by his email
-     * @param email of the user to get
-     * @return A UserEntity
-     */
-    public ResponseEntity<Object> getUserById(@PathVariable String email) throws ApiException{
-
-        UserEntity userEntity = userService.getUserByEmail(email);
-        return ResponseEntity.ok(toUser(userEntity));
     }
 
     /**
@@ -99,25 +64,20 @@ public class UsersApiController implements UsersApi {
     public ResponseEntity<List<UserOutput>> getUsers() {
         List<UserOutput> users = new ArrayList<>();
         for (UserEntity userEntity : userRepository.findAll()) {
-            users.add(toUser(userEntity));
+            users.add(userService.toUser(userEntity));
         }
         return ResponseEntity.ok(users);
     }
 
     /**
-     * Converts a UserEntity in a UserOutput
-     *
-     * @param entity to convert
-     * @return a UserOutput
+     * Gets a user by his email
+     * @param email of the user to get
+     * @return A UserEntity
      */
-    private UserOutput toUser(UserEntity entity) {
-        UserOutput user = new UserOutput();
-        user.setEmail(entity.getEmail());
-        user.setFirstName(entity.getFirstName());
-        user.setLastName(entity.getLastName());
-        user.setIsAdmin(entity.getIsAdmin());
-        user.setIsBlocked(entity.getIsBlocked());
-        return user;
+    public ResponseEntity<Object> getUserById(@PathVariable String email) throws ApiException{
+
+        UserEntity userEntity = userService.getUserByEmail(email);
+        return ResponseEntity.ok(userService.toUser(userEntity));
     }
 
     public ResponseEntity<Object> updateUser(@RequestHeader String password, @PathVariable String email) throws ApiException {
@@ -134,12 +94,12 @@ public class UsersApiController implements UsersApi {
      */
     public ResponseEntity<Object> deleteUser(@PathVariable String email) throws ApiException {
 
+        userService.deleteUserByEmail(email);
+
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{email}")
                 .buildAndExpand(email).toUri();
 
-        UserEntity userEntity = userService.getUserByEmail(email);
-        userRepository.delete(userEntity);
         return ResponseEntity.created(location).build();
     }
 }

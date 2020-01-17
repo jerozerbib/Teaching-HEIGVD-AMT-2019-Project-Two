@@ -1,10 +1,11 @@
 package ch.heigvd.amt.usermanager.api.endpoints;
 
 import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
-import ch.heigvd.amt.usermanager.configuration.JwtToken;
+import ch.heigvd.amt.usermanager.api.model.JwtRequest;
+import ch.heigvd.amt.usermanager.api.model.JwtResponse;
+import ch.heigvd.amt.usermanager.api.util.JwtToken;
+
 import ch.heigvd.amt.usermanager.entities.UserEntity;
-import ch.heigvd.amt.usermanager.model.JwtRequest;
-import ch.heigvd.amt.usermanager.model.JwtResponse;
 import ch.heigvd.amt.usermanager.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class AuthController {
 
         if(email.equals(userEntity.getEmail()) && password.equals(userEntity.getPassword())){
             String token = jwtToken.generateToken(userEntity);
-            return ResponseEntity.status(HttpStatus.OK).body(new JwtResponse(token));
+            return ResponseEntity.status(HttpStatus.OK).body(new JwtResponse().token(token));
         } else {
             throw new ApiException(HttpStatus.UNAUTHORIZED,"Bad credentials");
         }

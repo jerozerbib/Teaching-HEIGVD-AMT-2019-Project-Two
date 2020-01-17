@@ -1,11 +1,13 @@
-package ch.heigvd.amt.usermanager.configuration;
+package ch.heigvd.amt.usermanager.api.util;
 
 
+import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -76,17 +78,14 @@ public class JwtToken implements Serializable {
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
-
-    public Boolean validateToken(String token, UserEntity user) {
-        final String username = getEmailFromToken(token);
-        return (username.equals(user.getEmail()) && !isTokenExpired(token));
-    }
-
-    public void verify(String token) {
+    public void verify(String token) throws ApiException {
         //This line will throw an exception if it is not a signed JWS (as expected)
         Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(secret))
                 .parseClaimsJws(token).getBody();
+        if(!isTokenExpired(token)){
+            throw new ApiException(HttpStatus.UNAUTHORIZED,"Your token has expired");
+        }
     }
 
     public String getToken(HttpServletRequest req){
