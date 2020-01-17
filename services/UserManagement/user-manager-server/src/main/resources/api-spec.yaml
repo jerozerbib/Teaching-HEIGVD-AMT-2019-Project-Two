@@ -166,19 +166,21 @@ paths:
       consumes:
         - application/json
       parameters:
-        - name: password
-          in: query
-          required: false
-          type: string
-        - name: isBlocked
-          in: header
-          required: false
-          type: string
-        - name: email
-          in: path
+        - in: path
           type: string
           required: true
+          name: email
           description: The email of the user
+        - in: body
+          name: fields
+          description: The fields to update
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+              blocked:
+                type: string
       responses:
         201:
           description: Updated

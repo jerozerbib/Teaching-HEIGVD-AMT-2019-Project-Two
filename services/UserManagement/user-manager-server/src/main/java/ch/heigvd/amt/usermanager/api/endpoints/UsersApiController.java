@@ -2,16 +2,18 @@ package ch.heigvd.amt.usermanager.api.endpoints;
 
 import ch.heigvd.amt.usermanager.api.UsersApi;
 import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
+import ch.heigvd.amt.usermanager.api.model.InlineObject;
 import ch.heigvd.amt.usermanager.api.model.UserInput;
 import ch.heigvd.amt.usermanager.api.model.UserOutput;
+import ch.heigvd.amt.usermanager.api.service.AuthService;
 import ch.heigvd.amt.usermanager.api.service.UserService;
-import ch.heigvd.amt.usermanager.api.util.PasswordHash;
 import ch.heigvd.amt.usermanager.entities.UserEntity;
 import ch.heigvd.amt.usermanager.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -29,13 +31,15 @@ public class UsersApiController implements UsersApi {
     // Source : https://howtodoinjava.com/spring-boot2/spring-boot-crud-hibernate/
 
     private static final Logger log = LoggerFactory.getLogger(UsersApiController.class);
-    private PasswordHash passwordHash = new PasswordHash(5);
 
     @Autowired
     UserRepository userRepository;
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    AuthService authService;
 
     /**
      * Creates a new User from a UserInput using the request method POST
@@ -60,7 +64,7 @@ public class UsersApiController implements UsersApi {
      */
     public ResponseEntity<List<UserOutput>> getUsers(@Min(1)@ApiParam(value = "Number of the page", defaultValue = "1") @Valid @RequestParam(value = "page", required = false, defaultValue="1") Integer page,@Min(1)@ApiParam(value = "Size of the page", defaultValue = "20") @Valid @RequestParam(value = "pageSize", required = false, defaultValue="20") Integer pageSize) throws ApiException {
 
-        List<UserOutput> users = userService.getAllUsers(page,page);
+        List<UserOutput> users = userService.getAllUsers(page,pageSize);
         return ResponseEntity.ok(users);
     }
 
@@ -75,16 +79,9 @@ public class UsersApiController implements UsersApi {
         return ResponseEntity.ok(userService.toUser(userEntity));
     }
 
-    public ResponseEntity<Object> updateUser(@ApiParam(value = "The email of the user",required=true) @PathVariable("email") String email,@ApiParam(value = "") @Valid @RequestParam(value = "password", required = false) String password,@ApiParam(value = "" ) @RequestHeader(value="isBlocked", required=false) String isBlocked) throws ApiException {
-        UserEntity userEntity = userService.getUserByEmail(email);
+    public ResponseEntity<Object> updateUser(@ApiParam(value = "The email of the user",required=true) @PathVariable("email") String email,@ApiParam(value = ""  )  @Valid @RequestBody InlineObject fields) throws ApiException {
 
-        if (isBlocked != null){
-            userEntity.setIsBlocked(Integer.parseInt(isBlocked));
-        }
-        if (password != null){
-            userEntity.setPassword(passwordHash.hash(password));
-        }
-        userRepository.save(userEntity);
+        userService.updateUser(email,fields);
         return ResponseEntity.ok().build();
     }
 
