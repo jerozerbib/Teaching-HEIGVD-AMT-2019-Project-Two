@@ -3,6 +3,7 @@ package ch.heigvd.amt.usermanager.api.interceptor;
 
 import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
 import ch.heigvd.amt.usermanager.api.util.JwtToken;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         String token = header.split(" ")[1];
         try {
             jwtToken.verify(token);
-        }catch (Exception ex){
+        }catch (SignatureException signatureException){
             throw new ApiException(HttpStatus.UNAUTHORIZED,"Authentication failed");
         }
 

@@ -80,9 +80,14 @@ public class UsersApiController implements UsersApi {
         return ResponseEntity.ok(userService.toUser(userEntity));
     }
 
-    public ResponseEntity<Object> updateUser(@RequestHeader String password, @PathVariable String email) throws ApiException {
+    public ResponseEntity<Object> updateUser(@ApiParam(value = "The email we need to Id the user",required=true) @PathVariable("email") String email,@ApiParam(value = "" ) @RequestHeader(value="password", required=false) String password,@ApiParam(value = "" ) @RequestHeader(value="isBlocked", required=false) String isBlocked) throws Exception {
         UserEntity userEntity = userService.getUserByEmail(email);
-        userEntity.setPassword(password);
+        if (!isBlocked.equals("")){
+            userEntity.setIsBlocked(Integer.parseInt(isBlocked));
+        }
+        if (!password.equals("")){
+            userEntity.setPassword(password);
+        }
         userRepository.save(userEntity);
         return ResponseEntity.ok().build();
     }

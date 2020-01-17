@@ -83,7 +83,7 @@ public class JwtToken implements Serializable {
         Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(secret))
                 .parseClaimsJws(token).getBody();
-        if(!isTokenExpired(token)){
+        if(isTokenExpired(token)){
             throw new ApiException(HttpStatus.UNAUTHORIZED,"Your token has expired");
         }
     }

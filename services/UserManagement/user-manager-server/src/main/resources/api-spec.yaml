@@ -153,7 +153,11 @@ paths:
       parameters:
         - name: password
           in: header
-          required: true
+          required: false
+          type: string
+        - name: isBlocked
+          in: header
+          required: false
           type: string
         - name: email
           in: path
