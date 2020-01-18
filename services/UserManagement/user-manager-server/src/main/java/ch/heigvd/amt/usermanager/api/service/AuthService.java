@@ -22,10 +22,13 @@ public class AuthService {
     private SHA3.DigestSHA3 digestSHA3 = new SHA3.Digest512();
 
 
-    public String checkCreds(UserEntity userEntity, @Valid JwtRequest user) throws ApiException {
+    public String checkCreds(UserEntity userDB, @Valid JwtRequest userRequest) throws ApiException {
 
-        if (user.getEmail().equals(userEntity.getEmail()) && hashAndEncode(user.getPassword()).equals(userEntity.getPassword())) {
-                return jwtToken.generateToken(userEntity);
+        if(userDB.getIsBlocked() == 1){
+            throw new ApiException(HttpStatus.FORBIDDEN, "User has been blocked");
+        }
+        else if (userRequest.getEmail().equals(userDB.getEmail()) && hashAndEncode(userRequest.getPassword()).equals(userDB.getPassword())) {
+                return jwtToken.generateToken(userDB);
         }else {
             throw new ApiException(HttpStatus.UNAUTHORIZED,"Invalid credentials");
         }

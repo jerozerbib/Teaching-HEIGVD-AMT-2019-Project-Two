@@ -39,6 +39,10 @@ paths:
           description: Bad credentials
           schema:
             type: object
+        403:
+          description: User blocked
+          schema:
+            type: object
         404:
           description: Not found
           schema:
@@ -235,6 +239,10 @@ definitions:
     type: object
     properties:
       email:
+        type: string
+      firstname:
+        type: string
+      lastname:
         type: string
       isAdmin:
         type: integer

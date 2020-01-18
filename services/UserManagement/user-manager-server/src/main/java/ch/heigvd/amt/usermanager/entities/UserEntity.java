@@ -18,10 +18,11 @@ public class UserEntity implements Serializable {
      * Default constructor
      */
     public UserEntity() {}
-    public UserEntity(String email, String password) { this.email = email; this.password = password;}
 
     @Id
     private String email;
+    private String firstname;
+    private String lastname;
     private String password;
     private int isAdmin;
     private int isBlocked;

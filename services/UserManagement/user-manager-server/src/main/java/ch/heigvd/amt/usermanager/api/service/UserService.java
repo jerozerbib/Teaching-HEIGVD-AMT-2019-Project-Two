@@ -63,7 +63,11 @@ public class UserService {
         String password = fields.getPassword();
 
         if (isBlocked != null){
-            userEntity.setIsBlocked(Integer.parseInt(isBlocked));
+            if(userEntity.getIsAdmin() == 1) {
+                userEntity.setIsBlocked(Integer.parseInt(isBlocked));
+            }else {
+                throw new ApiException(HttpStatus.FORBIDDEN, "Only admin can block/unblock users");
+            }
         }
         if (password != null){
             userEntity.setPassword(authService.hashAndEncode(password));
@@ -85,6 +89,8 @@ public class UserService {
     public UserEntity toUserEntity(UserInput user) {
         UserEntity entity = new UserEntity();
         entity.setEmail(user.getEmail());
+        entity.setFirstname(user.getFirstname());
+        entity.setLastname(user.getLastname());
         entity.setPassword(authService.hashAndEncode(user.getPassword()));
         entity.setIsAdmin(user.getIsAdmin());
         entity.setIsBlocked(user.getIsBlocked());
@@ -100,6 +106,8 @@ public class UserService {
     public UserOutput toUser(UserEntity entity) {
         UserOutput user = new UserOutput();
         user.setEmail(entity.getEmail());
+        user.setFirstname(entity.getFirstname());
+        user.setLastname(entity.getLastname());
         user.setIsAdmin(entity.getIsAdmin());
         user.setIsBlocked(entity.getIsBlocked());
         return user;
