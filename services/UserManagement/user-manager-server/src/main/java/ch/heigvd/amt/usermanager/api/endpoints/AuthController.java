@@ -1,5 +1,6 @@
 package ch.heigvd.amt.usermanager.api.endpoints;
 
+import ch.heigvd.amt.usermanager.api.exceptions.ApiException;
 import ch.heigvd.amt.usermanager.api.model.JwtRequest;
 import ch.heigvd.amt.usermanager.api.model.JwtResponse;
 import ch.heigvd.amt.usermanager.api.service.AuthService;
@@ -27,11 +28,11 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping
-    public ResponseEntity<Object> createAuthenticationToken(@ApiParam(value = "" ,required=true )  @Valid @RequestBody JwtRequest userRequest) throws Exception {
+    public ResponseEntity<JwtResponse> createAuthenticationToken(@ApiParam(value = "" ,required=true )  @Valid @RequestBody JwtRequest userRequest) throws ApiException {
 
         UserEntity userDB = userService.getUserByEmail(userRequest.getEmail());
         String token = authService.checkCreds(userDB,userRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(new JwtResponse().token(token));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new JwtResponse().token(token));
     }
 
 }

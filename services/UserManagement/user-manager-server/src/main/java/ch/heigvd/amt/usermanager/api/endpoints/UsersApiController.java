@@ -62,6 +62,7 @@ public class UsersApiController implements UsersApi {
      *
      * @return a List of UserOutputs
      */
+
     public ResponseEntity<List<UserOutput>> getUsers(@Min(1)@ApiParam(value = "Number of the page", defaultValue = "1") @Valid @RequestParam(value = "page", required = false, defaultValue="1") Integer page,@Min(1)@ApiParam(value = "Size of the page", defaultValue = "20") @Valid @RequestParam(value = "pageSize", required = false, defaultValue="20") Integer pageSize) throws ApiException {
 
         List<UserOutput> users = userService.getAllUsers(page,pageSize);
@@ -90,6 +91,7 @@ public class UsersApiController implements UsersApi {
      * @param email
      * @return The deleted User
      */
+
     public ResponseEntity<Object> deleteUser(@ApiParam(value = "The email of the user",required=true) @PathVariable("email") String email)  throws ApiException {
 
         userService.deleteUserByEmail(email);
