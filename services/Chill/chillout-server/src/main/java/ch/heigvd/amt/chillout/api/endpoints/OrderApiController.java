@@ -41,7 +41,7 @@ public class OrderApiController implements OrdersApi {
     private Order toOrder(OrderEntity entity) {
         Order order = new Order();
         order.setId(entity.getId());
-        order.setClient(toClientOutput(entity.getClientEntity()));
+        order.setClient(toClient(entity.getClientEntity()));
         order.setOrderItems(toOrderItems(entity.getOrderItems()));
         return order;
     }
@@ -51,11 +51,9 @@ public class OrderApiController implements OrdersApi {
      * @param entity to convert
      * @return a ClientOutput
      */
-    private ClientOutput toClientOutput(ClientEntity entity) {
-        ClientOutput client = new ClientOutput();
-        client.setName(entity.getName());
-        client.setUsername(entity.getUsername());
-        client.setId(entity.getId());
+    private Client toClient(ClientEntity entity) {
+        Client client = new Client();
+        client.setEmail(entity.getEmail());
         return client;
     }
 
