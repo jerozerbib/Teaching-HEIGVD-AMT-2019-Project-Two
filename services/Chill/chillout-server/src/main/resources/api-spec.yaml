@@ -6,6 +6,11 @@ info:
 basePath: /api
 schemes:
   - http
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
 paths:
   /products:
     post:
@@ -22,6 +27,10 @@ paths:
       responses:
         '201':
           description: created
+          schema:
+            type: object
+        400:
+          description: "format exception"
           schema:
             type: object
     get:
@@ -49,11 +58,135 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Order'
+  /products/{id}:
+    patch:
+      security:
+        - Bearer: []
+      tags:
+        - "product"
+      summary: "Updates the ressource"
+      operationId: "updateProduct"
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          type: integer
+          format: int64
+          required: true
+          name: id
+          description: The email of the Product
+        - in: body
+          name: fields
+          description: The fields to update
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              unitPrice:
+                type: string
+              description:
+                type: string
+      responses:
+        200:
+          description: Description of Product
+          schema:
+            $ref: '#/definitions/ProductOutput'
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - "product"
+      summary: "Deletes the ressource"
+      operationId: "deleteProductById"
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          type: integer
+          format: int64
+          required: true
+          name: id
+          description: The id of the Product
+      responses:
+        200:
+          description: Deleted ressource
+          schema:
+            type: object
+        400:
+          description: Malformated request
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - "product"
+      summary: "Get the ressource"
+      operationId: "getProductById"
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          type: integer
+          format: int64
+          required: true
+          name: id
+          description: The email of the Product
+      responses:
+        200:
+          description: Description of Product
+          schema:
+            $ref: '#/definitions/ProductOutput'
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
 definitions:
   Client:
     type: object
     properties:
       email:
+        type: string
+      address:
         type: string
   Product:
     type: object
@@ -62,6 +195,7 @@ definitions:
         type: string
       unitPrice:
         type: number
+        format: double
       description:
         type: string
   ProductInput:
