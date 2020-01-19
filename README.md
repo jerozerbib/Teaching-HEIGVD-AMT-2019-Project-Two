@@ -76,9 +76,9 @@ You don't have to follow this sequence if you prefer to do some of the tasks bef
 **Week 1 (December 2nd):**
 
 * ~~Get familiar with the 2 reference projects; be able to build and run them on your machine; be able to run the CucumberJVM tests.~~
-* Do a first draft of the 2 REST APIs; have them reviewed if you are creating an API for the first time or are not sure about some design choices.
-* Get familiar with the Open API syntax; use the Swagger Editor or one of the IDE plugins to write your spec.
-* Create a git repo for your project. You should have 4 modules: 2 backend and 2 BDD projects. Use the reference projects as a template. Prepare the Docker Compose topology and images. Prepare scripts to build the code and the Docker the images.
+* ~~Do a first draft of the 2 REST APIs; have them reviewed if you are creating an API for the first time or are not sure about some design choices.~~
+* ~~Get familiar with the Open API syntax; use the Swagger Editor or one of the IDE plugins to write your spec.~~
+* ~~Create a git repo for your project. You should have 4 modules: 2 backend and 2 BDD projects. Use the reference projects as a template. Prepare the Docker Compose topology and images. Prepare scripts to build the code and the Docker the images.~~
 
 **Week 2 (December 9th):**
 
