@@ -35,6 +35,10 @@ paths:
           description: Token generated
           schema:
             $ref: '#/definitions/JwtResponse'
+        400:
+           description: Payload malformatted
+           schema:
+            type: object
         401:
           description: Bad credentials
           schema:
@@ -66,6 +70,10 @@ paths:
       responses:
         201:
           description: Created
+          schema:
+            type: object
+        400:
+          description: Payload malformatted
           schema:
             type: object
         401:
@@ -186,8 +194,12 @@ paths:
               blocked:
                 type: string
       responses:
-        201:
+        200:
           description: Updated
+          schema:
+            type: object
+        400:
+          description: Payload malformatted
           schema:
             type: object
         401:
@@ -217,7 +229,7 @@ paths:
           type: string
           description: The email of the user
       responses:
-        201:
+        200:
           description: deleted
           schema:
             type: object

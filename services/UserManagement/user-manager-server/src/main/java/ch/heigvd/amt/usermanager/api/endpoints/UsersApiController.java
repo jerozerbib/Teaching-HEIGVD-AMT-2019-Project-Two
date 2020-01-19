@@ -95,11 +95,6 @@ public class UsersApiController implements UsersApi {
     public ResponseEntity<Object> deleteUser(@ApiParam(value = "The email of the user",required=true) @PathVariable("email") String email)  throws ApiException {
 
         userService.deleteUserByEmail(email);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{email}")
-                .buildAndExpand(email).toUri();
-
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.ok().build();
     }
 }
