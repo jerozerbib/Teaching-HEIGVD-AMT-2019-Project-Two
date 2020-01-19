@@ -1,44 +1,72 @@
 version: '2.0'
 services:
-  
-  mysql:
-    container_name: user_mysql
+
+  user_api_db:
+    container_name: user_api_db
     restart: always
     image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     environment:
-        - MYSQL_ROOT_PASSWORD=root # TODO: Change this
-        - MYSQL_USER=test
-        - MYSQL_PASS=pass
-        - MYSQL_DATABASE=user_db
+      - MYSQL_ROOT_PASSWORD=root # TODO: Change this
+      - MYSQL_USER=test
+      - MYSQL_PASS=pass
+      - MYSQL_DATABASE=user_db
     volumes:
-      - user_mysqldb:/var/lib/mysql
+      - user_vol_db:/var/lib/mysql
     ports:
       - "3306:3306"
     expose:
       # Opens port 3306 on the container
       - '3306'
-      
+
   user-manager:
     image: user-manager/user-manager-server
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
+      - user_api_db
     links:
-      - mysql
-      
+      - user_api_db
+
+  chillout_api_db:
+    container_name: chillout_api_db
+    restart: always
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=root # TODO: Change this
+      - MYSQL_USER=test
+      - MYSQL_PASS=pass
+      - MYSQL_DATABASE=chillout_db
+    volumes:
+      - chillout_vol_db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+  chillout:
+    image: chillout/chillout-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - chillout_api_db
+    links:
+      - chillout_api_db
+
   phpmyadmin:
-        image: phpmyadmin/phpmyadmin:latest
-        depends_on:
-            - mysql
-        environment:
-            - MYSQL_ROOT_PASSWORD=root
-            - PMA_HOST=mysql
-            - PMA_PORT=3306
-            - PMA_USER=root
-            - PMA_PASSWORD=root
-        ports:
-            - "6060:80"
+    image: phpmyadmin/phpmyadmin:latest
+    depends_on:
+      - chillout_api_db
+#      - user_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    ports:
+      - "6060:80"
 volumes:
-  user_mysqldb:
+  user_vol_db:
+  chillout_vol_db:
