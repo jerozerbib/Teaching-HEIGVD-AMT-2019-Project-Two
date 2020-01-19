@@ -1,0 +1,274 @@
+swagger: "2.0"
+info:
+  description: "This is the user manager API for AMT Project Two"
+  version: "1.0.0"
+  title: "Users"
+host: localhost:8080
+basePath: /api
+schemes:
+  - http
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
+paths:
+  /authenticate:
+    post:
+      tags:
+        - "authenticate"
+      summary: "Authenticate"
+      operationId: createAuthenticationToken
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/JwtRequest'
+      responses:
+        201:
+          description: Token generated
+          schema:
+            $ref: '#/definitions/JwtResponse'
+        401:
+          description: Bad credentials
+          schema:
+            type: object
+        403:
+          description: User blocked
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+  /users:
+    post:
+      security:
+      - Bearer: []
+      tags:
+        - "users"
+      summary: "Create a new user"
+      operationId: createUser
+      consumes:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserInput'
+      responses:
+        201:
+          description: Created
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        409:
+          description: Duplicate ressource
+          schema:
+            type: object
+    get:
+      security:
+      - Bearer: []
+      tags:
+        - "users"
+      summary: "Get the list of all users"
+      operationId: "getUsers"
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          type: integer
+          required: false
+          default: 1
+          minimum: 1
+          name: page
+          description: Number of the page
+
+        - in: query
+          type: integer
+          required: false
+          default: 20
+          minimum: 1
+          name: pageSize
+          description: Size of the page
+      responses:
+        200:
+          description: List of users
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserOutput'
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+
+  /users/{email}:
+    get:
+      security:
+      - Bearer: []
+      tags:
+        - "users"
+      summary: "Gets a user by his email"
+      operationId: "getUserById"
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          type: string
+          required: true
+          name: email
+          description: The email of the user
+      responses:
+        200:
+          description: Description of user
+          schema:
+            $ref: '#/definitions/UserOutput'
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+    patch:
+      security:
+      - Bearer: []
+      tags:
+        - "users"
+      summary: "Updates the ressource"
+      operationId: "updateUser"
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          type: string
+          required: true
+          name: email
+          description: The email of the user
+        - in: body
+          name: fields
+          description: The fields to update
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+              blocked:
+                type: string
+      responses:
+        201:
+          description: Updated
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+
+    delete:
+      security:
+      - Bearer: []
+      tags:
+        - "users"
+      summary: "Deletes a given ressource"
+      operationId: "deleteUser"
+      parameters:
+        - name: email
+          in: path
+          required: true
+          type: string
+          description: The email of the user
+      responses:
+        201:
+          description: deleted
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+
+definitions:
+  User:
+    type: object
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+      isAdmin:
+        type: integer
+      isBlocked:
+        type: integer
+  UserOutput:
+    allOf:
+      - type: object
+      - $ref: "#/definitions/User"
+  UserInput:
+    allOf:
+      - $ref: "#/definitions/User"
+      - type: object
+      - properties:
+          password:
+            type: string
+
+  JwtRequest:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+  JwtResponse:
+      type: object
+      properties:
+        token:
+          type: string
