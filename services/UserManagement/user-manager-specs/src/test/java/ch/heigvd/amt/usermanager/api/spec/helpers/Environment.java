@@ -4,13 +4,11 @@ import ch.heigvd.amt.usermanager.ApiException;
 import ch.heigvd.amt.usermanager.ApiResponse;
 import ch.heigvd.amt.usermanager.api.AuthenticateApi;
 import ch.heigvd.amt.usermanager.api.UsersApi;
-import ch.heigvd.amt.usermanager.api.dto.JwtRequest;
-import ch.heigvd.amt.usermanager.api.dto.JwtResponse;
-import ch.heigvd.amt.usermanager.api.dto.User;
-import ch.heigvd.amt.usermanager.api.dto.UserInput;
+import ch.heigvd.amt.usermanager.api.dto.*;
 import okhttp3.OkHttpClient;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -21,9 +19,15 @@ public class Environment {
     private UsersApi usersApi = new UsersApi();
     private AuthenticateApi authApi = new AuthenticateApi();
 
-    private UserInput userAdmin = new UserInput();
+    private JwtRequest loginRequest;
+    private ApiResponse<JwtResponse> loginResponse;
+    private ApiResponse<Object> postResponse;
+    private ApiResponse<List<UserOutput>> getResponse;
 
-    private OkHttpClient okHttpClient;
+
+
+    private UserInput userPayload;
+    private String token;
 
     private ApiResponse lastApiResponse;
     private ApiException lastApiException;
@@ -36,10 +40,6 @@ public class Environment {
         String url = properties.getProperty("ch.heigvd.amt.usermanager.server.url");
         usersApi.getApiClient().setBasePath(url);
         authApi.getApiClient().setBasePath(url);
-
-        userAdmin.setEmail("adam.zouari@heig-vd.ch");
-        userAdmin.setPassword("azouari");
-
     }
 
     public UsersApi getUsersApi() {
@@ -48,22 +48,6 @@ public class Environment {
 
     public AuthenticateApi getAuthApi() {
         return authApi;
-    }
-
-    public UserInput getUserAdmin() {
-        return userAdmin;
-    }
-
-    public void setUserAdmin(UserInput userAdmin) {
-        this.userAdmin = userAdmin;
-    }
-
-    public OkHttpClient getOkHttpClient() {
-        return okHttpClient;
-    }
-
-    public void setOkHttpClient(OkHttpClient okHttpClient) {
-        this.okHttpClient = okHttpClient;
     }
 
     public void setUsersApi(UsersApi usersApi) {
@@ -104,5 +88,53 @@ public class Environment {
 
     public void setLastStatusCode(int lastStatusCode) {
         this.lastStatusCode = lastStatusCode;
+    }
+
+    public JwtRequest getLoginRequest() {
+        return loginRequest;
+    }
+
+    public void setLoginRequest(JwtRequest loginRequest) {
+        this.loginRequest = loginRequest;
+    }
+
+    public ApiResponse<JwtResponse> getLoginResponse() {
+        return loginResponse;
+    }
+
+    public void setLoginResponse(ApiResponse<JwtResponse> loginResponse) {
+        this.loginResponse = loginResponse;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public UserInput getUserPayload() {
+        return userPayload;
+    }
+
+    public void setUserPayload(UserInput userPayload) {
+        this.userPayload = userPayload;
+    }
+
+    public ApiResponse<Object> getPostResponse() {
+        return postResponse;
+    }
+
+    public void setPostResponse(ApiResponse<Object> postResponse) {
+        this.postResponse = postResponse;
+    }
+
+    public ApiResponse<List<UserOutput>> getGetResponse() {
+        return getResponse;
+    }
+
+    public void setGetResponse(ApiResponse<List<UserOutput>> getResponse) {
+        this.getResponse = getResponse;
     }
 }
