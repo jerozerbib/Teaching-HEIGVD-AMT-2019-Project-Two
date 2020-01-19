@@ -37,7 +37,11 @@ public class ProductsApiController implements ProductsApi {
     /**
      * Creates a new Product from the ProductInput of the Swagger file with a POST method request
      * @param product ProductInput that gives all the needed information necessary to create a Product
-     * @return a new Object
+     * @return a new Objecttry {
+                Double.parseDouble(unitPrice);
+            } catch (Exception e){
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Malformatted request");
+            }
      */
     public ResponseEntity<Object> createProduct(@ApiParam(value = "", required = true) @Valid @RequestBody ProductInput product) throws ApiException {
         ProductEntity productEntity = productService.createProduct(product);

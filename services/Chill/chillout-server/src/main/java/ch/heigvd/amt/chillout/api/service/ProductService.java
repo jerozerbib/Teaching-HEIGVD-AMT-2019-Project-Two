@@ -59,11 +59,6 @@ public class ProductService {
             productEntity.setName(name);
         }
         if (unitPrice != null){
-            try {
-                Double.parseDouble(unitPrice);
-            } catch (Exception e){
-                throw new ApiException(HttpStatus.BAD_REQUEST, "Malformatted request");
-            }
             productEntity.setUnitPrice(Double.parseDouble(unitPrice));
         }
         productRepository.save(productEntity);

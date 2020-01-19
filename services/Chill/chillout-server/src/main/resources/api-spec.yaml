@@ -30,7 +30,7 @@ paths:
           schema:
             type: object
         400:
-          description: "format exception"
+          description: Payload malformatted
           schema:
             type: object
     get:
@@ -45,19 +45,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/ProductOutput'
-  /orders:
-    get:
-      description: get the list of all orders
-      operationId: getOrders
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: success
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Order'
   /products/{id}:
     patch:
       security:
@@ -98,6 +85,10 @@ paths:
           description: Unauthorized
           schema:
             type: object
+        400:
+          description: Payload malformatted
+          schema:
+            type: object
         403:
           description: Forbidden
           schema:
@@ -130,7 +121,7 @@ paths:
           schema:
             type: object
         400:
-          description: Malformated request
+          description: Payload malformatted
           schema:
             type: object
         401:
@@ -180,6 +171,42 @@ paths:
           description: Not found
           schema:
             type: object
+  /clients:
+    post:
+    get:
+  /clients/{email}:
+    get:
+    patch:
+    delete:
+  /orders:
+    get:
+      description: get the list of all orders
+      operationId: getOrders
+      produces:
+        - application/json
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+  /orders/{id}:
+    get:
+    patch:
+    delete:
 definitions:
   Client:
     type: object
