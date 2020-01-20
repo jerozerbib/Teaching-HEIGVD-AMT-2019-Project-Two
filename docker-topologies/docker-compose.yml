@@ -48,7 +48,7 @@ services:
   chillout_api:
     image: chillout_api
     ports:
-      - "8081:8080"
+      - "8081:8081"
     depends_on:
       - chillout_api_db
     links:
