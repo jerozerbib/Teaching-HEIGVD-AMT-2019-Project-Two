@@ -20,6 +20,11 @@ La correspondance est la suivante :
 - dejvid.muaremi@heig-vd.ch  : dmuaremi
 
 
+## Traefik 
+
+Nous n'avons pas réussi faire marcher `Traefik`, mais nous vous avons fourni un script `run_traefik.sh` qui permettrait de faire tourner le load balancer.
+Nous avons rennomé le fichier `docker-compose.yml``en `docker-compose-traf.yml` afin de montrer notre progression mais qui est malheureusement vaine.
+
 ## Tests
 
 Afin de lancer les tests, il est possible de lancer la commande `./test.sh` depuis le dossier racine.

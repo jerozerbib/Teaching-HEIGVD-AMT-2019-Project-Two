@@ -1,0 +1,101 @@
+version: '2.0'
+services:
+  reverse-proxy:
+    image: traefik:v2.1.2
+    command: --api.insecure=true --providers.docker=true --providers.docker.exposedbydefault=false --entrypoints.web.address=:80 --entrypoints.mysql.address=:3306 --entrypoints.mysql2.address=:3305
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "2020:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      -  "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  user_api_db:
+    container_name: user_api_db
+    restart: always
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=root # TODO: Change this
+      - MYSQL_USER=test
+      - MYSQL_PASS=pass
+      - MYSQL_DATABASE=user_db
+    volumes:
+      - user_vol_db:/var/lib/mysql
+      - ./user_vol_db/:/docker-entrypoint-initdb.d/
+    ports:
+      - "3306:3306"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mysql.entrypoints=mysql"
+      - "traefik.tcp.routers.mysql.service=mysql"
+      - "traefik.tcp.services.mysql.loadbalancer.server.port=3306"
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+
+  user_api:
+    image: user_api
+#    ports:
+#      - "8080:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.users.rule=Host(`localhost`) && PathPrefix(`/api/users`)"
+      - "traefik.http.services.users.loadbalancer.server.port=8080"
+    depends_on:
+      - user_api_db
+    links:
+      - user_api_db
+
+  chillout_api_db:
+    container_name: chillout_api_db
+    restart: always
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=root # TODO: Change this
+      - MYSQL_USER=test
+      - MYSQL_PASS=pass
+      - MYSQL_DATABASE=chillout_db
+    volumes:
+      - chillout_vol_db:/var/lib/mysql
+      - ./chillout_vol_db/:/docker-entrypoint-initdb.d/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.mysql2.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mysql2.entrypoints=mysql2"
+      - "traefik.tcp.routers.mysql2.service=mysql2"
+      - "traefik.tcp.services.mysql2.loadbalancer.server.port=3305"
+    ports:
+      - "3305:3306"
+  chillout_api:
+    image: chillout_api
+#    ports:
+#      - "8081:8081"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chillout.rule=Host(`localhost`) && PathPrefix(`/api/chillout`)"
+      - "traefik.http.services.chillout.loadbalancer.server.port=8080"
+    depends_on:
+      - chillout_api_db
+    links:
+      - chillout_api_db
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    depends_on:
+      - chillout_api_db
+      - user_api_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+      - PMA_HOSTS=chillout_api_db,user_api_db
+    ports:
+      - "6060:80"
+volumes:
+  user_vol_db:
+  chillout_vol_db:
