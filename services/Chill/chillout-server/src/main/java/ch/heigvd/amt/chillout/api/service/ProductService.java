@@ -26,17 +26,34 @@ public class ProductService {
     @Autowired
     ProductRepository productRepository;
 
+    /**
+     * Creates a Product
+     * @param productInput
+     * @return
+     * @throws ApiException
+     */
     public ProductEntity createProduct(ProductInput productInput) throws ApiException{
         ProductEntity productEntity = toProductEntity(productInput);
         productRepository.save(productEntity);
         return productEntity;
     }
 
+    /**
+     * Deletes a Product
+     * @param id
+     * @throws ApiException
+     */
     public void deleteProductById(Long id) throws ApiException {
         ProductEntity productEntity = getProductById(id);
         productRepository.delete(productEntity);
     }
 
+    /**
+     * Get all the Products
+     * @param numPage
+     * @param pageSize
+     * @return
+     */
     public List<ProductOutput> getProducts(@Min(1) @Valid Integer numPage, @Min(1) @Valid Integer pageSize)  {
         Pageable paging = PageRequest.of(numPage,pageSize);
         Page<ProductOutput> pagedResult = productRepository.findAll(paging);
@@ -48,6 +65,12 @@ public class ProductService {
         }
     }
 
+    /**
+     * Update Product
+     * @param id
+     * @param fields
+     * @throws ApiException
+     */
     public void updateProduct(Long id, @Valid InlineObject fields) throws ApiException {
         ProductEntity productEntity = getProductById(id);
 
@@ -67,6 +90,12 @@ public class ProductService {
         productRepository.save(productEntity);
     }
 
+    /**
+     * Get Produt by ID
+     * @param id
+     * @return
+     * @throws ApiException
+     */
     public ProductEntity getProductById(Long id) throws ApiException {
         ProductEntity productEntity = productRepository.findById(id).orElse(null);
         if (productEntity == null){
@@ -88,6 +117,11 @@ public class ProductService {
         return entity;
     }
 
+    /**
+     * Converts a ProductOutput to a ProductEntity
+     * @param product
+     * @return
+     */
     public ProductEntity toProductEntity(ProductOutput product) {
         ProductEntity entity = new ProductEntity();
         entity.setName(product.getName());

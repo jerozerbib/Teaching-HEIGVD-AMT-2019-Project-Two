@@ -25,6 +25,12 @@ public class UserService {
     @Autowired
     AuthService authService;
 
+    /**
+     * Creates a User
+     * @param user
+     * @return
+     * @throws ApiException
+     */
     public UserEntity createUser(UserInput user) throws ApiException {
 
         if (userRepository.existsById(user.getEmail())) {
@@ -35,6 +41,12 @@ public class UserService {
         return userEntity;
     }
 
+    /**
+     * Gets a User by his email
+     * @param email
+     * @return
+     * @throws ApiException
+     */
     public UserEntity getUserByEmail(String email) throws ApiException {
         UserEntity userEntity = userRepository.findById(email).orElse(null);
         if (userEntity == null){
@@ -43,6 +55,12 @@ public class UserService {
         return userEntity;
     }
 
+    /**
+     * Gets all the Users
+     * @param numPage
+     * @param pageSize
+     * @return
+     */
     public List<UserOutput> getAllUsers(int numPage, int pageSize) {
 
         Pageable paging = PageRequest.of(numPage,pageSize);
@@ -55,6 +73,12 @@ public class UserService {
         }
     }
 
+    /**
+     * Updates a User by his email
+     * @param email
+     * @param fields
+     * @throws ApiException
+     */
     public void updateUser(String email, @Valid InlineObject fields) throws ApiException {
 
         UserEntity userEntity = getUserByEmail(email);
@@ -75,6 +99,11 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
+    /**
+     * Deletes a User
+     * @param email
+     * @throws ApiException
+     */
     public void deleteUserByEmail(String email) throws ApiException {
         UserEntity userEntity = getUserByEmail(email);
         userRepository.delete(userEntity);

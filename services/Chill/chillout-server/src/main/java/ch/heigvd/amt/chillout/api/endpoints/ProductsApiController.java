@@ -35,6 +35,12 @@ public class ProductsApiController implements ProductsApi {
     @Autowired
     ProductService productService;
 
+    /**
+     * Create a Product
+     * @param product
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<Object> createProduct(@ApiParam(value = "", required = true) @Valid @RequestBody ProductInput product) throws ApiException {
         ProductEntity productEntity = productService.createProduct(product);
 
@@ -45,21 +51,47 @@ public class ProductsApiController implements ProductsApi {
         return ResponseEntity.created(location).build();
     }
 
+    /**
+     * Gets all the Products
+     * @param page
+     * @param pageSize
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<List<ProductOutput>> getProducts(@Min(1)@ApiParam(value = "Number of the page", defaultValue = "1") @Valid @RequestParam(value = "page", required = false, defaultValue="1") Integer page, @Min(1)@ApiParam(value = "Size of the page", defaultValue = "20") @Valid @RequestParam(value = "pageSize", required = false, defaultValue="20") Integer pageSize) throws ApiException {
         List<ProductOutput> products = productService.getProducts(page,pageSize);
         return ResponseEntity.ok(products);
     }
 
+    /**
+     * Gets a a Product by his id
+     * @param id
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<ProductOutput> getProductById(@ApiParam(value = "The email of the Product",required=true) @PathVariable("id") Long id) throws ApiException {
         ProductEntity entity = productService.getProductById(id);
         return ResponseEntity.ok(productService.toProduct(entity));
     }
 
+    /**
+     * Updates a Produt
+     * @param id
+     * @param fields
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<ProductOutput> updateProduct(@ApiParam(value = "The id of the Product",required=true) @PathVariable("id") Long id, @ApiParam(value = ""  )  @Valid @RequestBody InlineObject fields) throws ApiException{
         productService.updateProduct(id, fields);
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Deletes a Product
+     * @param id
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<Object> deleteProductById(@ApiParam(value = "The id of the Product",required=true) @PathVariable("id") Long id) throws ApiException {
         productService.deleteProductById(id);
         return ResponseEntity.ok().build();

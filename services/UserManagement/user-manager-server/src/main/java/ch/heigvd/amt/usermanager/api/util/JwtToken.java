@@ -18,6 +18,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Source : https://dev.to/cuongld2/create-apis-with-jwt-authorization-using-spring-boot-24f9
+ * Edited by : Adam Zouari and Jeremy Zerbib
+ */
 
 @Component
 public class JwtToken implements Serializable {

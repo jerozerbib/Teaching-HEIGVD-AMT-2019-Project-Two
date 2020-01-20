@@ -24,6 +24,12 @@ public class ClientService {
     ClientRepository clientRepository;
 
 
+    /**
+     * Creates a Client
+     * @param client
+     * @return
+     * @throws ApiException
+     */
     public ClientEntity createClient(@Valid Client client) throws ApiException {
 
         if (clientRepository.existsById(client.getEmail())) {
@@ -35,11 +41,22 @@ public class ClientService {
 
     }
 
+    /**
+     * Deletes a Client by its Email
+     * @param email
+     * @throws ApiException
+     */
     public void deleteClientByEmail(String email) throws ApiException {
         ClientEntity clientEntity = getClientByEmail(email);
         clientRepository.delete(clientEntity);
     }
 
+    /**
+     * Gets a Client by its email
+     * @param email
+     * @return
+     * @throws ApiException
+     */
     public ClientEntity getClientByEmail(String email) throws ApiException {
 
         ClientEntity clientEntity = clientRepository.findById(email).orElse(null);
@@ -49,6 +66,12 @@ public class ClientService {
         return clientEntity;
     }
 
+    /**
+     * Get all the clients
+     * @param numPage
+     * @param pageSize
+     * @return
+     */
     public List<Client> getClients(@Min(1) @Valid Integer numPage, @Min(1) @Valid Integer pageSize) {
 
         Pageable paging = PageRequest.of(numPage,pageSize);
@@ -61,6 +84,11 @@ public class ClientService {
         }
     }
 
+    /**
+     * Converts a Client to a ClientEntity
+     * @param client
+     * @return
+     */
     public ClientEntity toClientEntity(@Valid Client client) {
         ClientEntity clientEntity = new ClientEntity();
         clientEntity.setEmail(client.getEmail());

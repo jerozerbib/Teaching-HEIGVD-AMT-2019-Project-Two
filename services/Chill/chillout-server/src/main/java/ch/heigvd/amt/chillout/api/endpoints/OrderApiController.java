@@ -30,6 +30,12 @@ public class OrderApiController implements OrdersApi {
     @Autowired
     OrderRepository orderRepository;
 
+    /**
+     * Creates an Order
+     * @param fields
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<Object> createOrder(@ApiParam(value = ""  )  @Valid @RequestBody InlineObject1 fields) throws ApiException {
 
         List<OrderItem> order = fields.getOrder();
@@ -43,20 +49,38 @@ public class OrderApiController implements OrdersApi {
         return ResponseEntity.created(location).build();
     }
 
+    /**
+     * Gets an Order by its ID
+     * @param id
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<Order> getOrderById(@ApiParam(value = "The id of the order",required=true) @PathVariable("id") String id) throws ApiException {
         OrderEntity orderEntity = ordersService.getOrderById(id);
         return ResponseEntity.ok(ordersService.toOrder(orderEntity));
     }
 
+    /**
+     * Gets all the Orders
+     * @param page
+     * @param pageSize
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<List<Order>> getOrders(@Min(1)@ApiParam(value = "Number of the page", defaultValue = "1") @Valid @RequestParam(value = "page", required = false, defaultValue="1") Integer page, @Min(1)@ApiParam(value = "Size of the page", defaultValue = "20") @Valid @RequestParam(value = "pageSize", required = false, defaultValue="20") Integer pageSize) throws ApiException {
 
         List<Order> orders = ordersService.getOrders(page,pageSize);
         return ResponseEntity.ok(orders);
     }
 
+    /**
+     * Delete an Order
+     * @param id
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<Object> deleteOrder(@ApiParam(value = "The id of the order",required=true) @PathVariable("id") String id) throws ApiException{
-
-       ordersService.deleteUserById(id);
+       ordersService.deleteOrderById(id);
        return ResponseEntity.ok().build();
     }
 

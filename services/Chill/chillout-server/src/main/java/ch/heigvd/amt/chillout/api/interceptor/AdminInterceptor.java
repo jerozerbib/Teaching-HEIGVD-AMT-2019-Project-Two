@@ -15,7 +15,14 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     @Autowired
     JwtToken jwtToken;
-
+    /**
+     * Handles the Interceptor behavior
+     * @param request
+     * @param response
+     * @param handler
+     * @return
+     * @throws ApiException
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ApiException {
 

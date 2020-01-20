@@ -27,6 +27,12 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    /**
+     * Create a JWT token for the authentication
+     * @param userRequest
+     * @return ResponseEntity
+     * @throws ApiException
+     */
     @PostMapping
     public ResponseEntity<JwtResponse> createAuthenticationToken(@ApiParam(value = "" ,required=true )  @Valid @RequestBody JwtRequest userRequest) throws ApiException {
 

@@ -11,10 +11,20 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
+    /**
+     * Builds the ResponseEntity
+     * @param apiError
+     * @return
+     */
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 
+    /**
+     * Handles the Api Exception
+     * @param ex
+     * @return
+     */
     @ExceptionHandler(ApiException.class)
     protected ResponseEntity<Object> handleApiException(ApiException ex) {
         ApiError apiError = new ApiError(ex.getCode(), ex.getMessage());

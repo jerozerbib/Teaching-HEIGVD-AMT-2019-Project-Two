@@ -17,8 +17,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Autowired
     OwnerInterceptor ownerInterceptor;
 
-
-
+    /**
+     * Adds the rules to the Interceptor
+     * @param registry
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor).addPathPatterns("/users","/users/*").order(1);

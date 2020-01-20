@@ -80,6 +80,13 @@ public class UsersApiController implements UsersApi {
         return ResponseEntity.ok(userService.toUser(userEntity));
     }
 
+    /**
+     * Updates the User
+     * @param email
+     * @param fields
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<Object> updateUser(@ApiParam(value = "The email of the user",required=true) @PathVariable("email") String email,@ApiParam(value = ""  )  @Valid @RequestBody InlineObject fields) throws ApiException {
 
         userService.updateUser(email,fields);

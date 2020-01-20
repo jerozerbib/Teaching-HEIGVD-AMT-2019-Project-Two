@@ -22,6 +22,13 @@ public class AuthService {
     private SHA3.DigestSHA3 digestSHA3 = new SHA3.Digest512();
 
 
+    /**
+     * Check credentials for a User
+     * @param userDB
+     * @param userRequest
+     * @return
+     * @throws ApiException
+     */
     public String checkCreds(UserEntity userDB, @Valid JwtRequest userRequest) throws ApiException {
 
         if(userDB.getIsBlocked() == 1){
@@ -34,6 +41,11 @@ public class AuthService {
         }
     }
 
+    /**
+     * Hash and encodes a password
+     * @param password
+     * @return
+     */
     public String hashAndEncode(String password){
         byte[] digest = digestSHA3.digest(password.getBytes());
         return Base64.getEncoder().encodeToString(digest);

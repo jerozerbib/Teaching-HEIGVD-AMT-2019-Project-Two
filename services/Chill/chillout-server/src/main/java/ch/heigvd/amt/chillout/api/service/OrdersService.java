@@ -32,6 +32,12 @@ public class OrdersService {
     @Autowired
     ProductService productService;
 
+    /**
+     * Creates an Order
+     * @param order
+     * @param email
+     * @return
+     */
     public OrderEntity createOrder(@Valid List<OrderItem> order, String email) {
 
         List<OrderItemEntity> orderItemEntityList = new ArrayList<>();
@@ -50,6 +56,12 @@ public class OrdersService {
 
     }
 
+    /**
+     * Get all the Orders
+     * @param numPage
+     * @param pageSize
+     * @return
+     */
     public List<Order> getOrders(@Min(1) @Valid Integer numPage, @Min(1) @Valid Integer pageSize) {
 
         Pageable paging = PageRequest.of(numPage,pageSize);
@@ -62,6 +74,12 @@ public class OrdersService {
         }
     }
 
+    /**
+     * Gets an Order by its ID
+     * @param id
+     * @return
+     * @throws ApiException
+     */
     public OrderEntity getOrderById(String id) throws ApiException {
 
         OrderEntity orderEntity = orderRepository.findById(Long.valueOf(id)).orElse(null);
@@ -71,7 +89,12 @@ public class OrdersService {
         return orderEntity;
     }
 
-    public void deleteUserById(String id) throws ApiException {
+    /**
+     * Deletes an Order by its ID
+     * @param id
+     * @throws ApiException
+     */
+    public void deleteOrderById(String id) throws ApiException {
         OrderEntity orderEntity = getOrderById(id);
         orderRepository.delete(orderEntity);
     }
@@ -108,6 +131,11 @@ public class OrdersService {
         return orderItems;
     }
 
+    /**
+     * Converts an OrderItem to an OrderItemEntity
+     * @param order
+     * @return
+     */
     private OrderItemEntity toOrderItemEntity(@Valid OrderItem order) {
 
         OrderItemEntity orderItemEntity = new OrderItemEntity();

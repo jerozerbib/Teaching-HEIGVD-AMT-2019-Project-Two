@@ -26,6 +26,12 @@ public class ClientsApiController implements ClientsApi{
     @Autowired
     ClientService clientService;
 
+    /**
+     * Creates a Client
+     * @param client
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<Object> createClient(@ApiParam(value = "", required = true) @Valid @RequestBody Client client) throws ApiException {
         ClientEntity clientEntity = clientService.createClient(client);
 
@@ -36,19 +42,37 @@ public class ClientsApiController implements ClientsApi{
         return ResponseEntity.created(location).build();
     }
 
+    /**
+     * Gets a Client by its ID
+     * @param email
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<Client> getClientById(@ApiParam(value = "The email of the clienz", required = true) @PathVariable("email") String email) throws ApiException {
 
         ClientEntity clientEntity = clientService.getClientByEmail(email);
         return ResponseEntity.ok(clientService.toClient(clientEntity));
     }
 
+    /**
+     * Gets all the Clients
+     * @param page
+     * @param pageSize
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<List<Client>> getClients(@Min(1)@ApiParam(value = "Number of the page", defaultValue = "1") @Valid @RequestParam(value = "page", required = false, defaultValue="1") Integer page,@Min(1)@ApiParam(value = "Size of the page", defaultValue = "20") @Valid @RequestParam(value = "pageSize", required = false, defaultValue="20") Integer pageSize) throws ApiException {
 
         List<Client> users = clientService.getClients(page,pageSize);
         return ResponseEntity.ok(users);
     }
 
-
+    /**
+     * Deletes a Client by its ID
+     * @param email
+     * @return
+     * @throws ApiException
+     */
     public ResponseEntity<Object> deleteClient(@ApiParam(value = "The email of the client", required = true) @PathVariable("email") String email) throws ApiException {
 
         clientService.deleteClientByEmail(email);
