@@ -21,3 +21,4 @@ docker-compose -f docker-topologies/docker-compose.yml up --build chillout_api_d
 sleep 25
 
 docker-compose -f docker-topologies/docker-compose.yml up --build phpmyadmin user_api chillout_api
+
