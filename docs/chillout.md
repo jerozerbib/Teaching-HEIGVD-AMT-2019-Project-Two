@@ -59,7 +59,7 @@ Client:
         type: string
 ```
 
-Nous avons choisi de ne renseigner que le champ email et adresse dans ce cas. En effet, l'authentification se faisant du côté `users`, nous n'avons pas besoin de savoir quelles sont les informations dans la première base de données. 
+Nous avons choisi de ne renseigner que le champ email dans ce cas. En effet, l'authentification se faisant du côté `users`, nous n'avons pas besoin de savoir quelles sont les informations dans la première base de données. 
 
 #### OrderItems
 

@@ -21,10 +21,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(authInterceptor).addPathPatterns("/chillout","/chillout/*").order(1);
-//        registry.addInterceptor(adminInterceptor).addPathPatterns("/chillout").order(2);
-//        registry.addInterceptor(ownerInterceptor).addPathPatterns("/chillout/*").order(3);
+        registry.addInterceptor(authInterceptor).addPathPatterns("/orders", "/orders/*", "/products", "/products/*", "/clients", "/clients/*").order(1);
+        registry.addInterceptor(adminInterceptor).addPathPatterns("/orders", "/products", "/clients").order(2);
+        registry.addInterceptor(ownerInterceptor).addPathPatterns("/clients/*").order(3);
     }
-
-    //TODO get /products ok
 }

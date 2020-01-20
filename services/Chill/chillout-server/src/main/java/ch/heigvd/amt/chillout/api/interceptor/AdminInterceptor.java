@@ -19,12 +19,10 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ApiException {
 
-        String token = jwtToken.getToken(request);
-        String method = request.getMethod();
-        int admin = jwtToken.getIsAdminFromToken(token);
+        String method        = request.getMethod();
 
-        if ((method.equals("POST") || method.equals("GET"))  && admin != 1){
-            throw new ApiException(HttpStatus.FORBIDDEN, "Only an admin can create/list users." );
+        if (!(method.equals("GET") && request.getServletPath().contains("/products")) && jwtToken.getIsAdminFromToken(jwtToken.getToken(request))!=1){
+            throw new ApiException(HttpStatus.FORBIDDEN, "Only an admin can do this." );
         }
         return true;
     }

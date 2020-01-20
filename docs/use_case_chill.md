@@ -26,6 +26,7 @@ If it is not up, the `Clients` cannot perform any actions but list all the `Prod
 - If I try to send a `GET` request.
   - I receive a list of `Product`s with the response code `200` and the payload is passed through.
 - If I try to send a `POST` 
+  - I receive a `401` error code because I am not logged in
 
 ### `/products/{id}`
 
@@ -101,24 +102,15 @@ If it is not up, the `Clients` cannot perform any actions but list all the `Prod
   - If it is not my `Order` and I am not an `admin`
     - I can't delete it
   - If it is not my `Order` and I am an `admin`
-    - I can delete it
+    - I can't delete it
   - If it is my `Order` and I am an `admin`
     - I can delete it
 - I send a `GET`
   - If it is my `Order` and I am not an `admin`
-    - I can see it  
+    - I can't see it  
   - If it is not my `Order` and I am not an `admin`
     - I can't see it
   - If it is not my `Order` and I am an `admin`
     - I can see it
   - If it is my `Order` and I am an `admin`
     - I can see it
-- I send a `PATCH`
-  - If it is my `Order` and I am not an `admin`
-    - I can edit it  
-  - If it is not my `Order` and I am not an `admin`
-    - I can't edit it
-  - If it is not my `Order` and I am an `admin`
-    - I can edit it
-  - If it is my `Order` and I am an `admin`
-    - I can edit it

@@ -20,6 +20,10 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ApiException {
+        if (request.getMethod().equals("GET") && request.getServletPath().contains("/products")){
+            return true;
+        }
+
 
         String header = request.getHeader("Authorization");
         if(header == null){
