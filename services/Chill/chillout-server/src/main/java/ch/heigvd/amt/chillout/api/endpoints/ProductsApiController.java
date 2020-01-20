@@ -3,6 +3,7 @@ package ch.heigvd.amt.chillout.api.endpoints;
 import ch.heigvd.amt.chillout.api.ProductsApi;
 import ch.heigvd.amt.chillout.api.exceptions.ApiException;
 import ch.heigvd.amt.chillout.api.model.InlineObject;
+import ch.heigvd.amt.chillout.api.model.Order;
 import ch.heigvd.amt.chillout.api.model.ProductInput;
 import ch.heigvd.amt.chillout.api.model.ProductOutput;
 import ch.heigvd.amt.chillout.api.service.ProductService;
@@ -13,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-07-26T19:36:34.802Z")
 
-@Controller
+@RestController
 public class ProductsApiController implements ProductsApi {
 
     @Autowired
@@ -34,15 +35,6 @@ public class ProductsApiController implements ProductsApi {
     @Autowired
     ProductService productService;
 
-    /**
-     * Creates a new Product from the ProductInput of the Swagger file with a POST method request
-     * @param product ProductInput that gives all the needed information necessary to create a Product
-     * @return a new Objecttry {
-                Double.parseDouble(unitPrice);
-            } catch (Exception e){
-                throw new ApiException(HttpStatus.BAD_REQUEST, "Malformatted request");
-            }
-     */
     public ResponseEntity<Object> createProduct(@ApiParam(value = "", required = true) @Valid @RequestBody ProductInput product) throws ApiException {
         ProductEntity productEntity = productService.createProduct(product);
 
@@ -53,12 +45,8 @@ public class ProductsApiController implements ProductsApi {
         return ResponseEntity.created(location).build();
     }
 
-    /**
-     * Gets all the Products with a GET method request
-     * @return all the products
-     */
-    public ResponseEntity<List<ProductOutput>> getProducts() throws ApiException {
-        List<ProductOutput> products = productService.getProducts();
+    public ResponseEntity<List<ProductOutput>> getProducts(@Min(1)@ApiParam(value = "Number of the page", defaultValue = "1") @Valid @RequestParam(value = "page", required = false, defaultValue="1") Integer page, @Min(1)@ApiParam(value = "Size of the page", defaultValue = "20") @Valid @RequestParam(value = "pageSize", required = false, defaultValue="20") Integer pageSize) throws ApiException {
+        List<ProductOutput> products = productService.getProducts(page,pageSize);
         return ResponseEntity.ok(products);
     }
 

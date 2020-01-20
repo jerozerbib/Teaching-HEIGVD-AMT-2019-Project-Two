@@ -2,16 +2,21 @@ package ch.heigvd.amt.chillout.api.service;
 
 import ch.heigvd.amt.chillout.api.exceptions.ApiException;
 import ch.heigvd.amt.chillout.api.model.InlineObject;
+import ch.heigvd.amt.chillout.api.model.Product;
 import ch.heigvd.amt.chillout.api.model.ProductInput;
 import ch.heigvd.amt.chillout.api.model.ProductOutput;
 import ch.heigvd.amt.chillout.entities.ProductEntity;
 import ch.heigvd.amt.chillout.repositories.ProductRepository;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +28,6 @@ public class ProductService {
 
     public ProductEntity createProduct(ProductInput productInput) throws ApiException{
         ProductEntity productEntity = toProductEntity(productInput);
-
-        if (productRepository.existsById(productEntity.getId())) {
-            throw new ApiException(HttpStatus.CONFLICT,"Product already exists.");
-        }
-
         productRepository.save(productEntity);
         return productEntity;
     }
@@ -37,12 +37,15 @@ public class ProductService {
         productRepository.delete(productEntity);
     }
 
-    public List<ProductOutput> getProducts() throws ApiException {
-        List<ProductOutput> products = new ArrayList<>();
-        for (ProductEntity productEntity : productRepository.findAll()) {
-            products.add(toProduct(productEntity));
+    public List<ProductOutput> getProducts(@Min(1) @Valid Integer numPage, @Min(1) @Valid Integer pageSize)  {
+        Pageable paging = PageRequest.of(numPage,pageSize);
+        Page<ProductOutput> pagedResult = productRepository.findAll(paging);
+
+        if(pagedResult.hasContent()){
+            return pagedResult.getContent();
+        }else {
+            return new ArrayList<>();
         }
-        return products;
     }
 
     public void updateProduct(Long id, @Valid InlineObject fields) throws ApiException {
@@ -67,7 +70,7 @@ public class ProductService {
     public ProductEntity getProductById(Long id) throws ApiException {
         ProductEntity productEntity = productRepository.findById(id).orElse(null);
         if (productEntity == null){
-            throw new ApiException(HttpStatus.NOT_FOUND,"User not found");
+            throw new ApiException(HttpStatus.NOT_FOUND,"Product not found");
         }
         return productEntity;
     }
@@ -78,6 +81,14 @@ public class ProductService {
      * @return a ProductEntity
      */
     public ProductEntity toProductEntity(ProductInput product) {
+        ProductEntity entity = new ProductEntity();
+        entity.setName(product.getName());
+        entity.setUnitPrice(product.getUnitPrice());
+        entity.setDescription(product.getDescription());
+        return entity;
+    }
+
+    public ProductEntity toProductEntity(ProductOutput product) {
         ProductEntity entity = new ProductEntity();
         entity.setName(product.getName());
         entity.setUnitPrice(product.getUnitPrice());

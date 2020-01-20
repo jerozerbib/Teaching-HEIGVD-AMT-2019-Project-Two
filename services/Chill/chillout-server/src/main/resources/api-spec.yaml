@@ -39,17 +39,45 @@ paths:
       operationId: getProducts
       produces:
         - application/json
+      parameters:
+        - in: query
+          type: integer
+          required: false
+          default: 1
+          minimum: 1
+          name: page
+          description: Number of the page
+        - in: query
+          type: integer
+          required: false
+          default: 20
+          minimum: 1
+          name: pageSize
+          description: Size of the page
       responses:
-        '200':
-          description: success
+        200:
+          description: List of users
           schema:
             type: array
             items:
               $ref: '#/definitions/ProductOutput'
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+
   /products/{id}:
     patch:
       security:
-        - Bearer: []
+      - Bearer: []
       tags:
         - "product"
       summary: "Updates the ressource"
@@ -100,7 +128,7 @@ paths:
             type: object
     delete:
       security:
-        - Bearer: []
+      - Bearer: []
       tags:
         - "product"
       summary: "Deletes the ressource"
@@ -139,7 +167,7 @@ paths:
             type: object
     get:
       security:
-        - Bearer: []
+      - Bearer: []
       tags:
         - "product"
       summary: "Get the ressource"
@@ -154,7 +182,7 @@ paths:
           format: int64
           required: true
           name: id
-          description: The email of the Product
+          description: The id of the Product
       responses:
         200:
           description: Description of Product
@@ -174,20 +202,217 @@ paths:
             type: object
   /clients:
     post:
+      security:
+      - Bearer: []
+      tags:
+        - "clients"
+      summary: "Create a client"
+      operationId: createClient
+      consumes:
+        - application/json
+      parameters:
+        - name: client
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Client'
+      responses:
+        201:
+          description: Created
+          schema:
+            type: object
+        400:
+          description: Payload malformatted
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        409:
+          description: Duplicate ressource
+          schema:
+            type: object
     get:
+      security:
+      - Bearer: []
+      tags:
+        - "clients"
+      summary: "Get the list of all clients"
+      operationId: "getClients"
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          type: integer
+          required: false
+          default: 1
+          minimum: 1
+          name: page
+          description: Number of the page
+
+        - in: query
+          type: integer
+          required: false
+          default: 20
+          minimum: 1
+          name: pageSize
+          description: Size of the page
+      responses:
+        200:
+          description: List of Clients
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Client'
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+
   /clients/{email}:
     get:
-    patch:
+      security:
+      - Bearer: []
+      tags:
+        - "clients"
+      summary: "Gets a client by his email"
+      operationId: "getClientById"
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          type: string
+          required: true
+          name: email
+          description: The email of the clienz
+      responses:
+        200:
+          description: Description of client
+          schema:
+            $ref: '#/definitions/Client'
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+
     delete:
+      security:
+      - Bearer: []
+      tags:
+        - "clients"
+      summary: "Deletes a given ressource"
+      operationId: "deleteClient"
+      parameters:
+        - name: email
+          in: path
+          required: true
+          type: string
+          description: The email of the client
+      responses:
+        200:
+          description: deleted
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+
   /orders:
+    post:
+      description: create an order
+      operationId: createOrder
+      consumes:
+        - application/json
+      parameters:
+      - in: body
+        name: fields
+        description: The fields of an order
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+            order:
+              type: array
+              items:
+                $ref: '#/definitions/OrderItem'
+      responses:
+        '201':
+          description: created
+          schema:
+            type: object
+        400:
+          description: Payload malformatted
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        409:
+          description: Duplicate ressource
+          schema:
+            type: object
+
     get:
+      security:
+      - Bearer: []
       description: get the list of all orders
       operationId: getOrders
       produces:
         - application/json
+      parameters:
+        - in: query
+          type: integer
+          required: false
+          default: 1
+          minimum: 1
+          name: page
+          description: Number of the page
+        - in: query
+          type: integer
+          required: false
+          default: 20
+          minimum: 1
+          name: pageSize
+          description: Size of the page
       responses:
         200:
-          description: success
+          description: List of users
           schema:
             type: array
             items:
@@ -204,17 +429,76 @@ paths:
           description: Not found
           schema:
             type: object
+
   /orders/{id}:
     get:
-    patch:
+      security:
+      - Bearer: []
+      tags:
+          - "orders"
+      summary: "Gets a order by his id"
+      operationId: "getOrderById"
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          type: string
+          required: true
+          name: id
+          description: The id of the order
+      responses:
+        200:
+          description: Description of order
+          schema:
+            $ref: '#/definitions/Order'
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
     delete:
+      security:
+      - Bearer: []
+      tags:
+        - "orders"
+      summary: "Deletes a given ressource"
+      operationId: "deleteOrder"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The id of the order
+      responses:
+        200:
+          description: deleted
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+          schema:
+            type: object
+        403:
+          description: Forbidden
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            type: object
+
 definitions:
   Client:
     type: object
     properties:
       email:
-        type: string
-      address:
         type: string
   Product:
     type: object
@@ -245,7 +529,7 @@ definitions:
         type: integer
         format: int64
       product:
-        $ref: '#/definitions/Product'
+        $ref: '#/definitions/ProductOutput'
       quantity:
         type: integer
   Order:

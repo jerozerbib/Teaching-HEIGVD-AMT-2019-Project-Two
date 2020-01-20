@@ -25,4 +25,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
 //        registry.addInterceptor(adminInterceptor).addPathPatterns("/chillout").order(2);
 //        registry.addInterceptor(ownerInterceptor).addPathPatterns("/chillout/*").order(3);
     }
+
+    //TODO get /products ok
 }

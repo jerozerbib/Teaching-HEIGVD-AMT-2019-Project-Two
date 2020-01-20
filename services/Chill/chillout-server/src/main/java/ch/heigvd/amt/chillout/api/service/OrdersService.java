@@ -1,102 +1,119 @@
-//package ch.heigvd.amt.chillout.api.service;
-//
-//import ch.heigvd.amt.chillout.api.exceptions.ApiException;
-//import ch.heigvd.amt.chillout.entities.OrderEntity;
-//import ch.heigvd.amt.chillout.repositories.OrderRepository;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.HttpStatus;
-//
-//public class OrdersService {
-//
-//    @Autowired
-//    OrderRepository orderRepository;
-//
-////    public UserEntity createUser(UserInput user) throws ApiException {
-////
-////        if (userRepository.existsById(user.getEmail())) {
-////            throw new ApiException(HttpStatus.CONFLICT,"User already exists.");
-////        }
-////        UserEntity userEntity = toUserEntity(user);
-////        userRepository.save(userEntity);
-////        return userEntity;
-////    }
-//
-//    public OrderEntity getUserByEmail(Long id) throws ApiException {
-//        OrderEntity userEntity = orderRepository.findById(id).orElse(null);
-//        if (userEntity == null){
-//            throw new ApiException(HttpStatus.NOT_FOUND,"User not found");
-//        }
-//        return userEntity;
-//    }
-//
-//    public List<UserOutput> getAllUsers(int numPage, int pageSize) {
-//
-//        Pageable paging = PageRequest.of(numPage,pageSize);
-//        Page<UserOutput> pagedResult = userRepository.findAll(paging);
-//
-//        if(pagedResult.hasContent()){
-//            return pagedResult.getContent();
-//        }else {
-//            return new ArrayList<>();
-//        }
-//    }
-//
-//    public void updateUser(String email, @Valid InlineObject fields) throws ApiException {
-//
-//        UserEntity userEntity = getUserByEmail(email);
-//
-//        String isBlocked = fields.getBlocked();
-//        String password = fields.getPassword();
-//
-//        if (isBlocked != null){
-//            if(userEntity.getIsAdmin() == 1) {
-//                userEntity.setIsBlocked(Integer.parseInt(isBlocked));
-//            }else {
-//                throw new ApiException(HttpStatus.FORBIDDEN, "Only admin can block/unblock users");
-//            }
-//        }
-//        if (password != null){
-//            userEntity.setPassword(authService.hashAndEncode(password));
-//        }
-//        userRepository.save(userEntity);
-//    }
-//
-//    public void deleteUserByEmail(String email) throws ApiException {
-//        UserEntity userEntity = getUserByEmail(email);
-//        userRepository.delete(userEntity);
-//    }
-//
-//    /**
-//     * Converts a UserInput into a UserEntity
-//     *
-//     * @param user to convert
-//     * @return a UserEntity
-//     */
-//    public UserEntity toUserEntity(UserInput user) {
-//        UserEntity entity = new UserEntity();
-//        entity.setEmail(user.getEmail());
-//        entity.setFirstname(user.getFirstname());
-//        entity.setLastname(user.getLastname());
-//        entity.setPassword(authService.hashAndEncode(user.getPassword()));
-//        entity.setIsAdmin(user.getIsAdmin());
-//        entity.setIsBlocked(user.getIsBlocked());
-//        return entity;
-//    }
-//
-//    /**
-//     * Converts a UserEntity in a UserOutput
-//     *
-//     * @param entity to convert
-//     * @return a UserOutput
-//     */
-//    public UserOutput toUser(UserEntity entity) {
-//        UserOutput user = new UserOutput();
-//        user.setEmail(entity.getEmail());
-//        user.setFirstname(entity.getFirstname());
-//        user.setLastname(entity.getLastname());
-//        user.setIsAdmin(entity.getIsAdmin());
-//        user.setIsBlocked(entity.getIsBlocked());
-//        return user;
-//    }
-//
-//}
+package ch.heigvd.amt.chillout.api.service;
+
+import ch.heigvd.amt.chillout.api.exceptions.ApiException;
+import ch.heigvd.amt.chillout.api.model.Order;
+import ch.heigvd.amt.chillout.api.model.OrderItem;
+import ch.heigvd.amt.chillout.api.model.Product;
+import ch.heigvd.amt.chillout.entities.ClientEntity;
+import ch.heigvd.amt.chillout.entities.OrderEntity;
+import ch.heigvd.amt.chillout.entities.OrderItemEntity;
+import ch.heigvd.amt.chillout.repositories.OrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class OrdersService {
+
+    @Autowired
+    OrderRepository orderRepository;
+
+    @Autowired
+    ClientService clientService;
+
+    @Autowired
+    ProductService productService;
+
+    public OrderEntity createOrder(@Valid List<OrderItem> order, String email) {
+
+        List<OrderItemEntity> orderItemEntityList = new ArrayList<>();
+        for (OrderItem o: order){
+            orderItemEntityList.add(toOrderItemEntity(o));
+        }
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrderItems(orderItemEntityList);
+
+        ClientEntity clientEntity = new ClientEntity();
+        clientEntity.setEmail(email);
+
+        orderEntity.setClientEntity(clientEntity);
+        orderRepository.save(orderEntity);
+        return orderEntity;
+
+    }
+
+    public List<Order> getOrders(@Min(1) @Valid Integer numPage, @Min(1) @Valid Integer pageSize) {
+
+        Pageable paging = PageRequest.of(numPage,pageSize);
+        Page<Order> pagedResult = orderRepository.findAll(paging);
+
+        if(pagedResult.hasContent()){
+            return pagedResult.getContent();
+        }else {
+            return new ArrayList<>();
+        }
+    }
+
+    public OrderEntity getOrderById(String id) throws ApiException {
+
+        OrderEntity orderEntity = orderRepository.findById(Long.valueOf(id)).orElse(null);
+        if (orderEntity == null){
+            throw new ApiException(HttpStatus.NOT_FOUND,"Order not found");
+        }
+        return orderEntity;
+    }
+
+    public void deleteUserById(String id) throws ApiException {
+        OrderEntity orderEntity = getOrderById(id);
+        orderRepository.delete(orderEntity);
+    }
+
+
+    /**
+     * Converts a OrderEntity to an Order
+     * @param entity to convert
+     * @return a Order
+     */
+    public Order toOrder(OrderEntity entity) {
+        Order order = new Order();
+        order.setId(entity.getId());
+        order.setClient(clientService.toClient(entity.getClientEntity()));
+        order.setOrderItems(toOrderItems(entity.getOrderItems()));
+        return order;
+    }
+
+    /**
+     * Convert a list of OrderItemEntities to a list of OrderItems
+     * @param entities to convert
+     * @return a list of OrderItems
+     */
+    private List<OrderItem> toOrderItems(List<OrderItemEntity> entities) {
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        for (OrderItemEntity entity : entities) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setId(entity.getId());
+            orderItem.setQuantity(entity.getQuantity());
+            orderItem.setProduct(productService.toProduct(entity.getProductEntity()));
+            orderItems.add(orderItem);
+        }
+        return orderItems;
+    }
+
+    private OrderItemEntity toOrderItemEntity(@Valid OrderItem order) {
+
+        OrderItemEntity orderItemEntity = new OrderItemEntity();
+        orderItemEntity.setProductEntity(productService.toProductEntity(order.getProduct()));
+        orderItemEntity.setQuantity(order.getQuantity());
+        return orderItemEntity;
+
+    }
+}
