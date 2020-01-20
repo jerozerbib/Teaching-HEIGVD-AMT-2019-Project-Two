@@ -4,7 +4,7 @@
 
 Pour lancer le projet, il suffit de lancer le script situé à la racine. Le nom du script est `run.sh`.
 
-Pour commencer le projet, il est inscrit dans la base de données un certain nombres d'utilisateurs (50) :
+Pour commencer le projet, il est inscrit dans la base de données un certain nombres d'utilisateurs (environ 50) :
 ```sql
 INSERT INTO user_entity VALUES ("adam.zouari@heig-vd.ch","Adam",1,0,"Zouari","kwb1S3oeT5/dI+6JtRVFqDdPKjI1hGPSlO1YnzYvykv/JyPzE5/FdnO9RDGwpQOxpfSB0+jQiXUQkM+iddnCtQ==");
 INSERT INTO user_entity VALUES ("jeremy.zerbib@heig-vd.ch","Jeremy",1,0,"Zerbib","LGJ/DV2emLDbjKxewD9bconRW7TxalS28RcZD7Se+j2DuciWSUyJtuIYhoZvDI6S0nEsRGhhRiyfQXcXdkQhhQ==");
@@ -19,6 +19,10 @@ La correspondance est la suivante :
 - adrien.allemand@heig-vd.ch : aallemand
 - dejvid.muaremi@heig-vd.ch  : dmuaremi
 
+
+## Tests
+
+Afin de lancer les tests, il est possible de lancer la commande `./test.sh` depuis le dossier racine.
 
 ## Contraintes
 
